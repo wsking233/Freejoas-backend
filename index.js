@@ -59,3 +59,12 @@ const client = new MongoClient(MONGO_DB_URL, {
     }
   }
   run().catch(console.dir);
+
+
+// Import routers
+const userRouter = require('./routers/userRouter');
+const freejoasRouter = require('./routers/freejoasRouter');
+
+// Use the routers
+app.use('api/v1/users', userRouter);
+app.use('api/v1/freejoas', freejoasRouter);
