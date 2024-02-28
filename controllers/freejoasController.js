@@ -4,6 +4,7 @@ const freejoasController = {
 
     //create a new freejoa
     createFreejoa: async (req, res) => {
+        console.log("createFreejoa called");
         try {
             const freejoa = new freejoasModel(req.body);
             await freejoa.save();

@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/newfreejoa', freejoasController.createFreejoa);
 
 // get all freejoas
-router.get('/freejoas', freejoasController.getAllFreejoas);
+router.get('/all', freejoasController.getAllFreejoas);
 
 // get freejoa by ID
 router.get('/:freejoaID', freejoasController.getFreejoaByID);
