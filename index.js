@@ -9,52 +9,19 @@
 **/
 
 // Load environment variables
-require('dotenv').config();
-
-//get the environment variables from the .env file
-const PORT = process.env.PORT; 
-// const mongodbURL = process.env.MONGO_DB_URL;
-
-//import the database model
-// const Freejoas = require('./model/FreejoasModel');
+const dotenv = require('dotenv').config();
+//check if the .env file is present
+if(dotenv.error){
+    throw dotenv.error;
+}
 
 //ininialize express app
 const express = require('express'); 
-// const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-// const https = require('https');
-// const fs = require('fs');
 
+const PORT = process.env.PORT; 
+
+// Create an express app
 const app = express();
-// app.use(cors());
-// app.use(express.json());
-// app.use(bodyParser.urlencoded({extended: true}));
-// app.use(bodyParser.json());
-
-//import routes
-// const freejoasRouter = require('./router/freejoasRouter');
-
-//use routes
-// app.use('/api', freejoasRouter);
-
-// Connect to MongoDB
-// mongoose.connect(mongodbURL,{
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// });
-
-// Create an HTTPS server
-// const options = {
-//     key: fs.readFileSync('./key.pem'),
-//     cert: fs.readFileSync('./cert.pem')
-// };
-
-// Start the server
-// https.createServer(options,app).listen(PORT, () => {
-//     console.log(`Server listening on port ${PORT} (HTTPS)`);
-// });
-
 
 app.get('/', (req, res) => {
     res.send('Hello World! - from freejoas-backend');
@@ -64,11 +31,31 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
     });
 
-// Check if MongoDB is connected
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//     console.info('Connected to MongoDB');
-//     console.info(`----------------------------`);
-// });
+// Connect to MongoDB
+const MONGO_DB_URL = process.env.MONGO_DB_URL;
 
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(MONGO_DB_URL, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    }
+  });
+
+  async function run() {
+    try {
+      // Connect the client to the server	(optional starting in v4.7)
+      await client.connect();
+      // Send a ping to confirm a successful connection
+      await client.db("admin").command({ ping: 1 });
+      console.log("MongoDB is successfully connected!");
+      console.log("----------------------------------");
+    } finally {
+      // Ensures that the client will close when you finish/error
+      await client.close();
+    }
+  }
+  run().catch(console.dir);
