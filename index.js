@@ -22,8 +22,16 @@ const mongoose = require('mongoose');
 const MONGO_DB_URL = process.env.MONGO_DB_URL;
 const PORT = process.env.PORT; 
 
+const bodyParser = require("body-parser");
+
+
 // Create an express app
 const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
 
 app.get('/', (req, res) => {
     res.send('Hello World! - from freejoas-backend');

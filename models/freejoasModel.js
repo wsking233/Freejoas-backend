@@ -4,10 +4,15 @@ const freejoasSchema = new mongoose.Schema({
     latitude: String,
     longitude: String,
     title: String,
-    status: Boolean,
+    isActive: Boolean,
+    status: {
+        type: String,
+        enum: ['low', 'mid', 'high'],
+        default: 'mid'
+    },
     amount: Number,
     description: String,
-    uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    uploader: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user'},
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
 },{
     timestamps: true
