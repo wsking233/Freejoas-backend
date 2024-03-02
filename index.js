@@ -9,11 +9,11 @@
 **/
 
 // Load environment variables
-const dotenv = require('dotenv').config();
+// const dotenv = require('dotenv').config();
 //check if the .env file is present
-if(dotenv.error){
-    throw dotenv.error;
-}
+// if(dotenv.error){
+//     throw dotenv.error;
+// }
 
 //ininialize express app
 const express = require('express'); 
