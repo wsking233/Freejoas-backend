@@ -29,7 +29,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8D7FF8A56B8645EC9ACC8C66DF53A886 }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@2
+        uses: azure/webapps-deploy@v2
         with: 
           app-name: 'freejoas'
           package: .
