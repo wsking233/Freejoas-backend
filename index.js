@@ -23,11 +23,16 @@ const MONGO_DB_URL = process.env.MONGO_DB_URL;
 const PORT = process.env.PORT; 
 
 const bodyParser = require("body-parser");
+const cors = require('cors');
+
+
 
 
 // Create an express app
 const app = express();
 
+// Use cors
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
