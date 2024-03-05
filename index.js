@@ -8,12 +8,22 @@
     * 
 **/
 
-// Load environment variables
-// const dotenv = require('dotenv').config();
+///////////////////////////////////////////////////
+/*************************************************/
+
+//use this area in local environment only
+
+// Load local environment variables
+const dotenv = require('dotenv').config();
 //check if the .env file is present
-// if(dotenv.error){
-//     throw dotenv.error;
-// }
+if(dotenv.error){
+    throw dotenv.error;
+}
+
+//comment this area out before pushing to cloud
+
+/*************************************************/
+///////////////////////////////////////////////////
 
 //ininialize express app
 const express = require('express'); 
@@ -24,9 +34,6 @@ const PORT = process.env.PORT;
 
 const bodyParser = require("body-parser");
 const cors = require('cors');
-
-
-
 
 // Create an express app
 const app = express();

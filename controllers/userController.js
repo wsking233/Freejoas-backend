@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
+const { createToken } = require('../server/auth');
 
 
 //remove password from the user object
@@ -12,15 +13,10 @@ function removePassword(user) {
 const userController = {
     //login
     login: async (req, res) => {
-        console.log('login called');
+        console.log('login called with email:', req.body.email);
         try {
-            //find a user with username or email
-            const user = await userModel.findOne({
-                $or: [
-                    { username: req.body.username },
-                    { email: req.body.email }
-                ]
-            });
+            //find a user with email
+            const user = await userModel.findOne({ email: req.body.email});
             if (!user) {
                 console.log('User not found');
                 return res.status(404).send({ message: 'User not found' });
@@ -34,10 +30,15 @@ const userController = {
                 console.log('Invalid password');
                 return res.status(401).send({ message: 'Invalid password' });
             }
+
+            //create a token
+            const token = createToken(user);
+
             console.log('User logged in successfully', user);
-            res.status(200).send({ message: 'User logged in successfully', user: removePassword(user) });
+            console.log('Token:', token);
+            res.status(200).send({ message: 'User logged in successfully', token: token});
         } catch (error) {
-            res.status(500).send({ message: 'Error logging in', error: error });
+            res.status(500).send({ message: 'Error logging in', error: error.message });
         }
     },
     //create a new user
@@ -59,7 +60,7 @@ const userController = {
             console.log('New user created successfully', user);
             res.status(201).send({ message: 'New user created successfully', user: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error creating user', error });
+            res.status(500).send({ message: 'Error creating user', error: error.message});
         }
     },
     //update a user with a specific ID
@@ -76,7 +77,7 @@ const userController = {
             console.log('User updated successfully', removePassword(user) );
             res.status(200).send({ message: 'User updated successfully', user: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error updating user', error: error });
+            res.status(500).send({ message: 'Error updating user', error: error.message });
         }
     },
     //get all users
@@ -91,7 +92,7 @@ const userController = {
             const safeUsers = users.map(user => removePassword(user));
             res.status(200).send({ message: 'All users returned successfully', users: safeUsers  });
         } catch (error) {
-            res.status(500).send({ message: 'Error getting users', error: error });
+            res.status(500).send({ message: 'Error getting users', error: error.message });
         }
     },
     //delete a user with a specific ID
@@ -106,7 +107,7 @@ const userController = {
             console.log('User deleted successfully', user);
             res.status(200).send({ message: 'User deleted successfully', user: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error deleting user', error: error });
+            res.status(500).send({ message: 'Error deleting user', error: error.message });
         }
     },
 };
