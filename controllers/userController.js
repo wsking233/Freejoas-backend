@@ -33,9 +33,9 @@ const userController = {
 
             //create a token
             const token = createToken(user);
-
+            req.session.token = token;
             console.log('User logged in successfully', user);
-            console.log('Token:', token);
+            console.log("session token:", req.session)
             res.status(200).send({ message: 'User logged in successfully', token: token});
         } catch (error) {
             res.status(500).send({ message: 'Error logging in', error: error.message });

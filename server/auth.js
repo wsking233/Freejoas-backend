@@ -19,7 +19,7 @@ function createToken(user) {
 }
 
 function verifyToken(req, res, next) {
-    const token = req.headers.authorization;
+    const token = req.session.token || req.headers.authorization;
     if(!token) {
         console.log("No Authorization header found");
         return res.status(401).send({ message: 'No Authorization header found' });
