@@ -27,11 +27,12 @@ if(dotenv.error){
 
 //ininialize express app
 const express = require('express'); 
-const session = require('express-session');
+// const session = require('express-session');
 // define to the database
 const mongoose = require('mongoose');
 const MONGO_DB_URL = process.env.MONGO_DB_URL;
 const PORT = process.env.PORT; 
+const SESSION_SECRET = process.env.TOKEN_SECRET;
 
 const bodyParser = require("body-parser");
 const cors = require('cors');
@@ -43,12 +44,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({   //use session to 
-    secret: process.env.SESSION_SECRET, //get the secret from environment variable
-    resave: false,  //don't save session if unmodified
-    saveUninitialized: true,    //don't create session until something stored
-}));
-
 
 app.get('/', (req, res) => {
     res.send('Hello World! - from freejoas-backend');

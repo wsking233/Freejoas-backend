@@ -4,16 +4,16 @@ const { verifyToken } = require('../server/auth');
 const router = express.Router();
 
 // upload a freejoa
-router.post('/upload',verifyToken, freejoasController.uploadFreejoa);   //test passed
+router.post('/upload', freejoasController.uploadFreejoa);   //test passed
 
 // get all freejoas
-router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passed
+router.get('/all', freejoasController.getAllFreejoas);  //test passed
 
 // get freejoa by ID
-router.get('/:freejoaID',verifyToken, freejoasController.getFreejoaByID);   //test passed
+router.get('/:freejoaID', freejoasController.getFreejoaByID);   //test passed
 
 // update a freejoa
-router.patch('/:freejoaID',verifyToken, freejoasController.updateFreejoa);  //test passed
+router.patch('/:freejoaID', freejoasController.updateFreejoa);  //test passed
 
 
 // admin user onlyi

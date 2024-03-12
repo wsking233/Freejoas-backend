@@ -33,9 +33,7 @@ const userController = {
 
             //create a token
             const token = createToken(user);
-            req.session.token = token;
             console.log('User logged in successfully', user);
-            console.log("session token:", req.session)
             res.status(200).send({ message: 'User logged in successfully', token: token});
         } catch (error) {
             res.status(500).send({ message: 'Error logging in', error: error.message });
@@ -65,11 +63,12 @@ const userController = {
     },
     //update a user with a specific ID
     updateUser: async (req, res) => {
-        console.log('updateUser called with userID:', req.params.userID);
+        const userId = req.decodedToken._id;
+        console.log('updateUser called with userID:',userId);
         try {
             const user = await userModel.findByIdAndUpdate(
-                req.params.userID,
-                req.body,
+                userId,    //find the user by ID
+                req.body,           //update the user with the request body
                 { new: true, runValidators: true });    //returns the updated user instead of the old user
             if (!user) {
                 return res.status(404).send({ message: 'User not found' });

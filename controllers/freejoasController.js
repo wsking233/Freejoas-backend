@@ -89,7 +89,8 @@ const freejoasController = {
                 console.log("Freejoa not found, request ID: ", req.params.freejoaID);
                 return res.status(404).send({message:'Freejoa not found'});
             }
-            res.status(200).send(freejoa);
+            console.log("Freejoa deleted successfully", freejoa);
+            res.status(200).send({message: 'Freejoa deleted successfully', freejoa: freejoa});
         } catch (error) {
             console.log("Error deleting freejoa", error);
             res.status(500).send({message: 'Error deleting freejoa', error: error});
