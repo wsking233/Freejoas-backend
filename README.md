@@ -1,6 +1,7 @@
 # Freejoas-backend
- This is the backend for freejoas app
+ This is the back-end server for freejoas app
 
+Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), vist  [here](https://github.com/EugeneRaynerNZ/freejoas) to see more front-end detail. 
 
 # API Documentation
 
