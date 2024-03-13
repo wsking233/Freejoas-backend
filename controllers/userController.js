@@ -13,17 +13,18 @@ function removePassword(user) {
 const userController = {
     //login
     login: async (req, res) => {
-        console.log('login called with email:', req.body.email);
+        const { email, password } = req.body;
+        console.log('login called with email:', email);
         try {
             //find a user with email
-            const user = await userModel.findOne({ email: req.body.email});
+            const user = await userModel.findOne({ email: email});
             if (!user) {
                 console.log('User not found');
                 return res.status(404).send({ message: 'User not found' });
             }
 
             //compare the password
-            const validPassword = await bcrypt.compare(req.body.password, user.password);
+            const validPassword = await bcrypt.compare(password, user.password);
 
             //check if the password is correct
             if (!validPassword) {
@@ -132,10 +133,28 @@ const userController = {
             res.status(500).send({ message: 'Error getting users', error: error.message });
         }
     },
-    //get user by ID
-    getUserByID: async (req, res) => {
+    //get user's profile
+    getUserProfile: async (req, res) => {
         const userId = req.decodedToken._id;
         console.log('getUserByID called with userID:', userId);
+        try {
+            const user = await userModel.findById(userId);
+            if (!user) {
+                console.log('User not found', userId);
+                return res.status(404).send({ message: 'User not found'});
+            }
+            console.log('User returned successfully', user);
+            console.log("------------------------------------------")
+            res.status(200).send({ message: 'User returned successfully', user: removePassword(user)  });
+        } catch (error) {
+            res.status(500).send({ message: 'Error getting user', error: error.message });
+        }
+    },
+    //get user by ID
+    getUserByID: async (req, res) => {
+        const adminId = req.decodedToken._id;
+        const userId = req.body.userId; //get the userId from the request body
+        console.log('getUserByID called with userID:', adminId);
         try {
             const user = await userModel.findById(userId);
             if (!user) {

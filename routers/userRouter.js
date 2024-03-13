@@ -6,8 +6,11 @@ const { verifyToken, checkPermission } = require('../server/auth');
 //get all users
 router.get('/all',verifyToken, checkPermission(["admin"]), userController.getAllUsers); //only admin can get all users
 
+//get user's profile
+router.get('/profile', verifyToken, userController.getUserProfile);   //all users can get their own information
+
 //get user by ID
-router.get('/find', verifyToken, userController.getUserByID);   //all users can get their own information
+router.get('/find', verifyToken, checkPermission(["admin"]), userController.getUserByID);  //only admin can get user by ID
 
 // login a user
 router.post('/login', userController.login);   //create a token and send it to the user
