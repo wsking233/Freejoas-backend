@@ -140,7 +140,7 @@ const userController = {
             const user = await userModel.findById(userId);
             if (!user) {
                 console.log('User not found', userId);
-                return res.status(404).send({ message: 'User not found', userID: userId });
+                return res.status(404).send({ message: 'User not found'});
             }
             console.log('User returned successfully', user);
             console.log("------------------------------------------")
@@ -158,7 +158,7 @@ const userController = {
             const user = await userModel.findByIdAndDelete(userId);
             if (!user) {
                 console.log('User not found', userId);
-                return res.status(404).send({ message: "User: " + userId + " is not found"});
+                return res.status(404).send({ message: 'User not found'});
             }
             console.log("User:" + userId + " is deleted by admin:" + adminId, user);
             console.log("------------------------------------------")
