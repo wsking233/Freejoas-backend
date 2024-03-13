@@ -97,7 +97,7 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "accountType":"xxxxxxx",
     }
     ```
-- **DELETE /user/accounttype**
+- **DELETE /user/delete**
     - *Description*: delete a user by user ID
     - *Required Account Type*: admin
     - *Request body*: 
