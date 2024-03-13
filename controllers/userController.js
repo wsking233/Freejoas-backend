@@ -34,6 +34,7 @@ const userController = {
             //create a token
             const token = createToken(user);
             console.log('User logged in successfully', user);
+            console.log("------------------------------------------")
             res.status(200).send({ message: 'User logged in successfully', token: token});
         } catch (error) {
             res.status(500).send({ message: 'Error logging in', error: error.message });
@@ -46,7 +47,7 @@ const userController = {
         try {
             //check the email is exists in database
             if (await userModel.findOne({ email: req.body.email })) {
-                return res.status(401).send('Email already exists');
+                return res.status(401).send({ message: 'Email already exists' });
             };
 
             // Hash the password
@@ -56,6 +57,7 @@ const userController = {
             const user = await userModel.create(req.body);
             await user.save();
             console.log('New user created successfully', user);
+            console.log("------------------------------------------")
             res.status(201).send({ message: 'New user created successfully', user: removePassword(user)  });
         } catch (error) {
             res.status(500).send({ message: 'Error creating user', error: error.message});
@@ -64,7 +66,14 @@ const userController = {
     //update a user with a specific ID
     updateUser: async (req, res) => {
         const userId = req.decodedToken._id;
-        console.log('updateUser called with userID:',userId);
+        console.log('updateUser API called with userID:',userId);
+        
+        //check if accountType is in the request body
+        if (req.body.accountType) {
+            console.log(userId + " is trying to update account type with updateUser API.")
+            return res.status(403).send({ message: 'Updating account type is not allowed' });
+        }
+
         try {
             const user = await userModel.findByIdAndUpdate(
                 userId,    //find the user by ID
@@ -74,37 +83,86 @@ const userController = {
                 return res.status(404).send({ message: 'User not found' });
             }
             console.log('User updated successfully', removePassword(user) );
+            console.log("------------------------------------------")
             res.status(200).send({ message: 'User updated successfully', user: removePassword(user)  });
+        } catch (error) {
+            res.status(500).send({ message: 'Error updating user', error: error.message });
+        }
+    },
+    //update user account type
+    updateAccountType: async (req, res) => {
+        const adminId = req.decodedToken._id;
+        const {userId, accountType} = req.body; //get the userId and accountType from the request body
+        console.log('updateAccountType API called with userID:',adminId);
+
+        if(!accountType) {
+            console.log('Account type is required');
+            return res.status(400).send({ message: 'Account type is required' });
+        }
+
+        try {
+            const user = await userModel.findByIdAndUpdate(
+                userId,    //find the user by ID
+                { accountType },    //update the user with the accountType
+                { new: true, runValidators: true });    //returns the updated user instead of the old user
+            if (!user) {
+                return res.status(404).send({ message: 'User not found' });
+            }
+            console.log('User updated successfully', removePassword(user) );
+            console.log("------------------------------------------")
+            res.status(200).send({ message: 'User account type updated successfully', user: removePassword(user)  });
         } catch (error) {
             res.status(500).send({ message: 'Error updating user', error: error.message });
         }
     },
     //get all users
     getAllUsers: async (req, res) => {
-        console.log('getAllUsers called');
+        const adminId = req.decodedToken._id;
+        console.log('getAllUsers called with userID:', adminId);
         try {
             const users = await userModel.find({});
-            console.log('All users returned successfully');
             if (users.length === 0) {
                 return res.status(200).send({ message: 'database is currently empty' });
             }
-            const safeUsers = users.map(user => removePassword(user));
+            const safeUsers = users.map(user => removePassword(user));  //remove password from each user
+            console.log('All users returned successfully');
+            console.log("------------------------------------------")
             res.status(200).send({ message: 'All users returned successfully', users: safeUsers  });
         } catch (error) {
             res.status(500).send({ message: 'Error getting users', error: error.message });
         }
     },
+    //get user by ID
+    getUserByID: async (req, res) => {
+        const userId = req.decodedToken._id;
+        console.log('getUserByID called with userID:', userId);
+        try {
+            const user = await userModel.findById(userId);
+            if (!user) {
+                console.log('User not found', userId);
+                return res.status(404).send({ message: 'User not found', userID: userId });
+            }
+            console.log('User returned successfully', user);
+            console.log("------------------------------------------")
+            res.status(200).send({ message: 'User returned successfully', user: removePassword(user)  });
+        } catch (error) {
+            res.status(500).send({ message: 'Error getting user', error: error.message });
+        }
+    },
     //delete a user with a specific ID
     deleteUser: async (req, res) => {
-        console.log('deleteUser called with userID:', req.params.userID);
+        const adminId = req.decodedToken._id;
+        const {userId} = req.body; //get the userId from the request body
+        console.log('deleteUser called with userID:', adminId);
         try {
-            const user = await userModel.findByIdAndDelete(req.params.userID);
+            const user = await userModel.findByIdAndDelete(userId);
             if (!user) {
-                console.log('User not found', req.params.userID);
-                return res.status(404).send({ message: 'User not found', userID: req.params.userID });
+                console.log('User not found', userId);
+                return res.status(404).send({ message: "User: " + userId + " is not found"});
             }
-            console.log('User deleted successfully', user);
-            res.status(200).send({ message: 'User deleted successfully', user: removePassword(user)  });
+            console.log("User:" + userId + " is deleted by admin:" + adminId, user);
+            console.log("------------------------------------------")
+            res.status(200).send({ message: "User:" + userId + " is deleted by admin:" + adminId});
         } catch (error) {
             res.status(500).send({ message: 'Error deleting user', error: error.message });
         }

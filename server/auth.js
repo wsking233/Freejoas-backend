@@ -63,20 +63,15 @@ function checkPermission(requiredAccountTypes) {
     const accountType = req.decodedToken.accountType; //get the accountType from the token
 
     //check if the requiredAccountTypes includes the accountType
-    console.log("accountType:", accountType);
-    console.log("requiredAccountTypes:", requiredAccountTypes);
-
     if (!requiredAccountTypes.includes(accountType)) {  
       //return a 403 status code if the requiredAccountTypes does not include the accountType
       console.log("Permission denied");
       return res.status(403).send({ message: 'Permission denied' });
     }
     console.log("Permission granted");
-    next(); //call the next middleware
+    next(); 
   };
 }
-
-
 
 module.exports = {
   createToken,
