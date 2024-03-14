@@ -15,8 +15,8 @@
 
 // Load local environment variables
 const dotenv = require('dotenv').config();
-//check if the .env file is present
-if(dotenv.error){
+
+if(dotenv.error){//check if the .env file is present
     throw dotenv.error;
 }
 
@@ -25,25 +25,23 @@ if(dotenv.error){
 /*************************************************/
 ///////////////////////////////////////////////////
 
+//get environment variables
+const PORT = process.env.PORT; 
+const MONGO_DB_URL = process.env.MONGO_DB_URL;
+
 //ininialize express app
 const express = require('express'); 
-// const session = require('express-session');
-// define to the database
 const mongoose = require('mongoose');
-const MONGO_DB_URL = process.env.MONGO_DB_URL;
-const PORT = process.env.PORT; 
-const SESSION_SECRET = process.env.TOKEN_SECRET;
-
 const bodyParser = require("body-parser");
 const cors = require('cors');
 
 // Create an express app
 const app = express();
 
-// Use cors
+// Use cors to allow cross-origin requests
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.get('/', (req, res) => {
     res.send('Hello World! - from freejoas-backend');
@@ -55,19 +53,19 @@ app.listen(PORT, () => {
 
 // import models
 const userModel = require('./models/userModel');
-const freejoaModel = require('./models/freejoaModel');
+const freejoasModel = require('./models/freejoaModel');
 
 // Import routers
 const userRouter = require('./routers/userRouter');
-const freejoasRouter = require('./routers/freejoasRouter');
+const freejoaRouter = require('./routers/freejoaRouter');
 
 // Use the routers
 app.use('/api/v1/user', userRouter);
-app.use('/api/v1/freejoa', freejoasRouter);
+app.use('/api/v1/freejoa', freejoaRouter);
 
 // Connect to MongoDB
 mongoose.connect(MONGO_DB_URL);
-
+//check if the connection is successful
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {

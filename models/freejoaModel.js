@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const freejoasSchema = new mongoose.Schema({
+const freejoaSchema = new mongoose.Schema({
     latitude: String,
     longitude: String,
     title: String,
@@ -18,4 +18,4 @@ const freejoasSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('freejoas', freejoasSchema);
+module.exports = mongoose.model('freejoa', freejoaSchema);
