@@ -73,7 +73,11 @@ const freejoaController = {
         try {
             const freejoa = await freejoaModel.findByIdAndUpdate(
                 freejoaId, //find the freejoa by ID
+               {
+                ...
                 req.body,   //update the freejoa with the request body
+                updatedBy: userId   //set the updatedBy to the current user
+            },
                 { new: true, runValidators: true });
             if (!freejoa) {
                 console.log("Freejoa not found, request ID: ", freejoaId);
