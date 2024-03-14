@@ -4,7 +4,7 @@ const freejoasSchema = new mongoose.Schema({
     latitude: String,
     longitude: String,
     title: String,
-    isActive: Boolean,
+    isActive: {type: Boolean, default: true},
     status: {
         type: String,
         enum: ['low', 'mid', 'high'],

@@ -28,11 +28,11 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
 ```
 
 
-## Endpoints
+## User Endpoints
 
 - **GET /user/all**
     - *Description*: Retrieve all user object in database
-    - *Required Account Type*: admin
+    - *Required Account Type*: `admin`
     - *Request body*: none
 
 - **GET /user/profile**
@@ -42,8 +42,8 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
 
 
 - **GET /user/find**
-    - *Description*: Only return the user object of the requesting user for receiving personal information.
-    - *Required Account Type*: admin
+    - *Description*: Return an user object with a required user ID
+    - *Required Account Type*: `admin`
     - *Request body*: 
     ```json
     {
@@ -89,7 +89,7 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
     ```
 - **PATCH /user/accounttype**
     - *Description*: Only for update user's accounty type
-    - *Required Account Type*: admin
+    - *Required Account Type*: `admin`
     - *Request body*: 
     ```json
     {
@@ -97,19 +97,76 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "accountType":"xxxxxxx",
     }
     ```
-- **DELETE /user/delete**
+-   **DELETE /user/delete**
     - *Description*: delete a user by user ID
-    - *Required Account Type*: admin
+    - *Required Account Type*: `admin`
     - *Request body*: 
     ```json
     {
-        "userId":"xxxxxxx",
+        "userId":"xxxxxxx",(required)
     }
     ```
 
+## Freejoa Endpoints
 
+- **GET /freejoa/all**
+    - *Description*: Retrieve all freejoa object in database
+    - *Required Account Type*: none
+    - *Request body*: none
 
+- **GET /freejoa/find**
+    - *Description*: Return an freejoa object with a required freejoa ID
+    - *Required Account Type*: none
+    - *Request body*: 
+    ```json
+    {
+        "freejoaId":"xxxxxxx",(required)
+    }
+    ```
 
+- **GET /freejoa/find**
+    - *Description*: Return an freejoa object with a required freejoa ID
+    - *Required Account Type*: none
+    - *Request body*: none
+
+- **POST /freejoa/upload**
+    - *Description*: Upload a new freejoa
+    - *Required Account Type*: none
+    - *Request body*: 
+    ```json
+    {
+        "latitude":"xxxxxxx",
+        "longitude":"xxxxxxx",
+        "title":"xxxxxxx",
+        "amount":"xxxxxxx",
+        "description":"xxxxxxx",
+    }
+    ```
+
+- **PATCH /freejoa/update**
+    - *Description*: update a new freejoa, `freejoaId` is required in request body
+    - *Required Account Type*: none
+    - *Request body*: 
+    ```json
+    {
+        "freejoaId":"xxxxxxx",(required)
+        "latitude":"xxxxxxx",
+        "longitude":"xxxxxxx",
+        "title":"xxxxxxx",
+        "amount":"xxxxxxx",
+        "description":"xxxxxxx",
+    }
+    ```
+
+- **PATCH /freejoa/update**
+    - *Description*: delete a user by user ID
+    - *Required Account Type*: `admin`
+    - *Request body*: 
+    ```json
+    {
+        "freejoaId":"xxxxxxx",(required)
+    }
+    ```
 
 
 

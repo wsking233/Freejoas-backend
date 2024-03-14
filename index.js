@@ -55,7 +55,7 @@ app.listen(PORT, () => {
 
 // import models
 const userModel = require('./models/userModel');
-const freejoasModel = require('./models/freejoasModel');
+const freejoaModel = require('./models/freejoaModel');
 
 // Import routers
 const userRouter = require('./routers/userRouter');
@@ -63,7 +63,7 @@ const freejoasRouter = require('./routers/freejoasRouter');
 
 // Use the routers
 app.use('/api/v1/user', userRouter);
-app.use('/api/v1/freejoas', freejoasRouter);
+app.use('/api/v1/freejoa', freejoasRouter);
 
 // Connect to MongoDB
 mongoose.connect(MONGO_DB_URL);

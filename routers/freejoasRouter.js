@@ -3,14 +3,15 @@ const freejoasController = require('../controllers/freejoasController');
 const { verifyToken, checkPermission } = require('../server/auth');
 const router = express.Router();
 
-// upload a freejoa
-router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
 
 // get all freejoas
 router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passed
 
 // get freejoa by ID
 router.get('/find',verifyToken, freejoasController.getFreejoaByID);   //test passed
+
+// upload a freejoa
+router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
 
 // update a freejoa
 router.patch('/update',verifyToken, freejoasController.updateFreejoa);  //test passed
