@@ -13,6 +13,9 @@ router.get('/find',verifyToken, freejoasController.getFreejoaByID);   //test pas
 // upload a freejoa
 router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
 
+//upload images to a freejoa
+router.post('/uploadimage', verifyToken, freejoasController.uploadImages);   //test passed
+
 // update a freejoa
 router.patch('/update',verifyToken, freejoasController.updateFreejoa);  //test passed
 

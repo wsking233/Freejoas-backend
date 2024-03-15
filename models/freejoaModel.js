@@ -10,6 +10,13 @@ const freejoaSchema = new mongoose.Schema({
         enum: ['low', 'mid', 'high'],
         default: 'mid'
     },
+    images:[
+        Buffer
+        // {
+        //     data: Buffer,
+        //     contentType: String
+        // }
+    ],
     amount: Number,
     description: String,
     uploader: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user'},
