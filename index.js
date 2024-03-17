@@ -40,8 +40,9 @@ const app = express();
 
 // Use cors to allow cross-origin requests
 app.use(cors());
+app.use(bodyParser.urlencoded({ limit:"16mb", extended: true })); // support encoded bodies
+app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.get('/', (req, res) => {
     res.send('Hello World! - from freejoas-backend');
