@@ -14,11 +14,11 @@
 //use this area in local environment only
 
 // Load local environment variables
-const dotenv = require('dotenv').config();
+// const dotenv = require('dotenv').config();
 
-if(dotenv.error){//check if the .env file is present
-    throw dotenv.error;
-}
+// if(dotenv.error){//check if the .env file is present
+//     throw dotenv.error;
+// }
 
 //comment this area out before pushing to cloud
 
