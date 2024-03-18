@@ -40,6 +40,7 @@ const app = express();
 
 // Use cors to allow cross-origin requests
 app.use(cors());
+// set request size limit before parsing
 app.use(bodyParser.urlencoded({ limit:"16mb", extended: true })); // support encoded bodies
 app.use(bodyParser.json({ limit: '16mb' }));
 app.use(bodyParser.json()); // support json encoded bodies

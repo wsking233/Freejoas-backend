@@ -8,16 +8,10 @@ const router = express.Router();
 router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passed
 
 // get freejoa by ID
-router.get('/find',verifyToken, freejoasController.getFreejoaByID);   //test passed
-
-// get freejoa images
-router.get('/images',verifyToken, freejoasController.getAllImages);   //test passed
+router.get('/find:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
 
 // upload a freejoa
 router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
-
-//upload images to a freejoa
-router.post('/uploadimage', verifyToken, freejoasController.uploadImages);   //test passed
 
 // update a freejoa
 router.patch('/update', verifyToken, freejoasController.updateFreejoa);  //test passed
