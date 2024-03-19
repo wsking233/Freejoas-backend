@@ -10,6 +10,15 @@ const freejoaSchema = new mongoose.Schema({
         enum: ['low', 'mid', 'high'],
         default: 'mid'
     },
+    image:[
+        {
+            //auto generate the id
+            _id: {type: mongoose.Schema.Types.ObjectId, auto: true, required: true},    
+            data: String,
+            contentType: String,
+            filename: String,
+        }
+    ],
     amount: Number,
     description: String,
     uploader: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user'},
@@ -17,5 +26,14 @@ const freejoaSchema = new mongoose.Schema({
 },{
     timestamps: true
 });
+
+
+freejoaSchema.pre('save', function(next){
+    this.image.forEach((image,index) =>{    //loop through the images
+        image.index = index;    //set the index of the image
+    })
+
+    next();
+})
 
 module.exports = mongoose.model('freejoa', freejoaSchema);

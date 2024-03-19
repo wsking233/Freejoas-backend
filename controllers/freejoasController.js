@@ -1,5 +1,7 @@
 const { Mongoose } = require('mongoose');
 const freejoaModel = require('../models/freejoaModel');
+const userModel = require('../models/userModel');
+
 
 const freejoaController = {
 
@@ -14,7 +16,7 @@ const freejoaController = {
             //check is this user exists in database
             if (!await userModel.findById(userId)) {
                 console.log("User not found");
-                return res.status(404).send({message: 'User not found'});
+                return res.status(404).send({ message: 'User not found' });
             }
 
             //create a new freejoa
@@ -22,12 +24,20 @@ const freejoaController = {
             freejoa.uploader = userId;  //set the uploader to the current user
             freejoa.updatedBy = userId;   //set the updatedBy to the current user
             await freejoa.save();
+
+            const user = userModel.findByIdAndUpdate(
+                userId,
+                { push: { uploads: freejoa._id } },
+                { new: true, runValidators: true }
+            )
+
             console.log("New freejoa created successfully", freejoa);
+            console.log("user uploads:", user.uploads)
             console.log("------------------------------------------")
-            res.status(201).send({message: 'New freejoa uploaded successfully', freejoa: freejoa});
+            res.status(201).send({ message: 'New freejoa uploaded successfully'});
         } catch (error) {
             console.log("Error creating freejoa", error);
-            res.status(500).send({message: 'Error uploading a freejoa', error: error.message});
+            res.status(500).send({ message: 'Error uploading a freejoa', error: error.message });
         }
     },
     //get all freejoas
@@ -44,25 +54,25 @@ const freejoaController = {
             res.status(200).send(freejoas);
         } catch (error) {
             console.log("Error getting freejoas", error);
-            res.status(500).send({message: 'Error getting freejoas', error: error.message});
+            res.status(500).send({ message: 'Error getting freejoas', error: error.message });
         }
     },
     //get freejoa by ID
     getFreejoaByID: async (req, res) => {
         const userId = req.decodedToken._id;
-        const freejoaId = req.body.freejoaId; //get the freejoaId from the request body
+        const freejoaId = req.params.freejoaId; //get the freejoaId from the params
         console.log("getFreejoaByID called with userID:", userId);
         try {
             const freejoa = await freejoaModel.findById(freejoaId);
             if (!freejoa) {
                 console.log("Freejoa not found, request ID: ", freejoaId);
-                return res.status(404).send({message:'Freejoa not found'});
+                return res.status(404).send({ message: 'Freejoa not found' });
             }
-            console.log("Freejoa found:",freejoa);
-            res.status(200).send({message: 'Freejoa found', freejoa: freejoa});
+            console.log("Freejoa found:", freejoa);
+            res.status(200).send({ message: 'Freejoa found', freejoa: freejoa });
             console.log("------------------------------------------");
         } catch (error) {
-            res.status(500).send({message: 'Error getting freejoa', error: error.message});
+            res.status(500).send({ message: 'Error getting freejoa', error: error.message });
         }
     },
     //update a freejoa with a specific ID
@@ -71,23 +81,45 @@ const freejoaController = {
         const freejoaId = req.body.freejoaId; //get the freejoaId from the request body
         console.log("updateFreejoa called with userID:", userId);
         try {
-            const freejoa = await freejoaModel.findByIdAndUpdate(
-                freejoaId, //find the freejoa by ID
-               {
-                ...
-                req.body,   //update the freejoa with the request body
-                updatedBy: userId   //set the updatedBy to the current user
-            },
-                { new: true, runValidators: true });
-            if (!freejoa) {
+            //get the freejoa by ID
+            const freejoa = await freejoaModel.findById(freejoaId);
+
+            if (!freejoa) { //if freejoa not found return 404
                 console.log("Freejoa not found, request ID: ", freejoaId);
-                return res.status(404).send({message:'Freejoa not found'});
+                return res.status(404).send({ message: 'Freejoa not found' });
             }
-            res.status(200).send({message: 'Freejoa updated successfully', freejoa: freejoa});
+
+            //check if imageId is in the request body
+            if (req.body.imageId) {
+                const imageId = req.body.imageId;
+                const imageFound = freejoa.image.id(imageId);   //find the image from the image array
+                if (!imageFound) {  //if image not found return 404
+                    console.log("Image not found, request ID: ", imageId);
+                    return res.status(404).send({ message: 'Image not found' });
+                }
+                imageFound.remove(); //delete the image
+            }
+
+            //check if the request body contains image key
+            if (req.body.image) {
+                freejoa.image.push(req.body.image); //add the image to the freejoa
+            }
+
+            //check all other keys in the request body
+            for (const key in req.body) {
+                if (key !== "imageId" && key !== "image") {
+                    freejoa[key] = req.body[key];   //update the freejoa with the request body
+                }
+            }
+
+            freejoa.updatedBy = userId;   //set the updatedBy to the current user
+            await freejoa.save();    //save the updated freejoa
+
+            res.status(200).send({ message: 'Freejoa updated successfully'});
             console.log("------------------------------------------");
         } catch (error) {
             console.log("Error updating freejoa", error);
-            res.status(500).send({message: 'Error updating freejoa', error: error.message});
+            res.status(500).send({ message: 'Error updating freejoa', error: error.message });
         }
     },
     //delete a freejoa with a specific ID
@@ -98,17 +130,17 @@ const freejoaController = {
         try {
             const freejoa = await freejoaModel.findByIdAndDelete(freejoaId);
             if (!freejoa) {
-                console.log("Freejoa not found, request ID: ",freejoaId);
-                return res.status(404).send({message:'Freejoa not found'});
+                console.log("Freejoa not found, request ID: ", freejoaId);
+                return res.status(404).send({ message: 'Freejoa not found' });
             }
             console.log("Freejoa deleted successfully", freejoa);
-            res.status(200).send({ message: "Freejoa: " + freejoaId + " is deleted by admin:" + adminId});
+            res.status(200).send({ message: "Freejoa: " + freejoaId + " is deleted by admin:" + adminId });
         } catch (error) {
             console.log("Error deleting freejoa", error);
-            res.status(500).send({message: 'Error deleting freejoa', error: error.message});
+            res.status(500).send({ message: 'Error deleting freejoa', error: error.message });
         }
     }
-
 };
+
 
 module.exports = freejoaController;

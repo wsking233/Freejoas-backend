@@ -8,13 +8,13 @@ const router = express.Router();
 router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passed
 
 // get freejoa by ID
-router.get('/find',verifyToken, freejoasController.getFreejoaByID);   //test passed
+router.get('/find:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
 
 // upload a freejoa
 router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
 
 // update a freejoa
-router.patch('/update',verifyToken, freejoasController.updateFreejoa);  //test passed
+router.patch('/update', verifyToken, freejoasController.updateFreejoa);  //test passed
 
 // delete a freejoa with a specific ID
 router.delete('/delete',verifyToken, checkPermission(["admin"]), freejoasController.deleteFreejoa); //test passed
