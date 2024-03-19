@@ -3,6 +3,16 @@ const freejoaModel = require('../models/freejoaModel');
 const userModel = require('../models/userModel');
 
 
+function removeImage(freejoa) {
+    const freejoaObject = freejoa.toObject();
+    freejoaObject.image = freejoaObject.image.map(image => {
+        if(image.data.length !== 0) image.data = "image data"; //replace the image data with a string
+        return image;
+    });
+    return freejoaObject;
+}
+
+
 const freejoaController = {
 
     //upload a new freejoa
@@ -31,7 +41,7 @@ const freejoaController = {
                 { new: true, runValidators: true }
             )
 
-            console.log("New freejoa created successfully", freejoa);
+            console.log("New freejoa created successfully");
             console.log("user uploads:", user.uploads)
             console.log("------------------------------------------")
             res.status(201).send({ message: 'New freejoa uploaded successfully'});
@@ -51,7 +61,7 @@ const freejoaController = {
             }
             console.log("All freejoas returned successfully");
             console.log("------------------------------------------");
-            res.status(200).send(freejoas);
+            res.status(200).send({message: 'All freejoas returned successfully', data: freejoas});
         } catch (error) {
             console.log("Error getting freejoas", error);
             res.status(500).send({ message: 'Error getting freejoas', error: error.message });
@@ -68,8 +78,8 @@ const freejoaController = {
                 console.log("Freejoa not found, request ID: ", freejoaId);
                 return res.status(404).send({ message: 'Freejoa not found' });
             }
-            console.log("Freejoa found:", freejoa);
-            res.status(200).send({ message: 'Freejoa found', freejoa: freejoa });
+            console.log("Freejoa is found");
+            res.status(200).send({ message: 'Freejoa is found', freejoa: freejoa });
             console.log("------------------------------------------");
         } catch (error) {
             res.status(500).send({ message: 'Error getting freejoa', error: error.message });
@@ -133,7 +143,7 @@ const freejoaController = {
                 console.log("Freejoa not found, request ID: ", freejoaId);
                 return res.status(404).send({ message: 'Freejoa not found' });
             }
-            console.log("Freejoa deleted successfully", freejoa);
+            console.log("Freejoa deleted successfully");
             res.status(200).send({ message: "Freejoa: " + freejoaId + " is deleted by admin:" + adminId });
         } catch (error) {
             console.log("Error deleting freejoa", error);

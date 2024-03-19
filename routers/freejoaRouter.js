@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passed
 
 // get freejoa by ID
-router.get('/find:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
+router.get('/find/:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
 
 // upload a freejoa
 router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
