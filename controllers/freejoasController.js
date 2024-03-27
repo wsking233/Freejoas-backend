@@ -47,7 +47,7 @@ const freejoaController = {
             res.status(201).send({ message: 'New freejoa uploaded successfully'});
         } catch (error) {
             console.log("Error creating freejoa", error);
-            res.status(500).send({ message: 'Error uploading a freejoa', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //get all freejoas
@@ -64,7 +64,7 @@ const freejoaController = {
             res.status(200).send({message: 'All freejoas returned successfully', data: freejoas});
         } catch (error) {
             console.log("Error getting freejoas", error);
-            res.status(500).send({ message: 'Error getting freejoas', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //get freejoa by ID
@@ -79,10 +79,10 @@ const freejoaController = {
                 return res.status(404).send({ message: 'Freejoa not found' });
             }
             console.log("Freejoa is found");
-            res.status(200).send({ message: 'Freejoa is found', freejoa: freejoa });
+            res.status(200).send({ message: 'Freejoa is found', data: freejoa });
             console.log("------------------------------------------");
         } catch (error) {
-            res.status(500).send({ message: 'Error getting freejoa', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //update a freejoa with a specific ID
@@ -129,7 +129,7 @@ const freejoaController = {
             console.log("------------------------------------------");
         } catch (error) {
             console.log("Error updating freejoa", error);
-            res.status(500).send({ message: 'Error updating freejoa', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //delete a freejoa with a specific ID
@@ -147,7 +147,7 @@ const freejoaController = {
             res.status(200).send({ message: "Freejoa: " + freejoaId + " is deleted by admin:" + adminId });
         } catch (error) {
             console.log("Error deleting freejoa", error);
-            res.status(500).send({ message: 'Error deleting freejoa', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     }
 };
