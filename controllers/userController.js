@@ -38,7 +38,7 @@ const userController = {
             console.log("------------------------------------------")
             res.status(200).send({ message: 'User logged in successfully', token: token});
         } catch (error) {
-            res.status(500).send({ message: 'Error logging in', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //create a new user
@@ -59,9 +59,9 @@ const userController = {
             await user.save();
             console.log('New user created successfully', user);
             console.log("------------------------------------------")
-            res.status(201).send({ message: 'New user created successfully', user: removePassword(user)  });
+            res.status(201).send({ message: 'New user created successfully', data: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error creating user', error: error.message});
+            res.status(500).send({ message: error.message});
         }
     },
     //update a user with a specific ID
@@ -85,9 +85,9 @@ const userController = {
             }
             console.log('User updated successfully', removePassword(user) );
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'User updated successfully', user: removePassword(user)  });
+            res.status(200).send({ message: 'User updated successfully', data: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error updating user', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //update user account type
@@ -111,9 +111,9 @@ const userController = {
             }
             console.log('User updated successfully', removePassword(user) );
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'User account type updated successfully', user: removePassword(user)  });
+            res.status(200).send({ message: 'User account type updated successfully', data: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error updating user', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //get all users
@@ -128,9 +128,9 @@ const userController = {
             const safeUsers = users.map(user => removePassword(user));  //remove password from each user
             console.log('All users returned successfully');
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'All users returned successfully', users: safeUsers  });
+            res.status(200).send({ message: 'All users returned successfully', data: safeUsers  });
         } catch (error) {
-            res.status(500).send({ message: 'Error getting users', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //get user's profile
@@ -145,9 +145,9 @@ const userController = {
             }
             console.log('User returned successfully', user);
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'User returned successfully', user: removePassword(user)  });
+            res.status(200).send({ message: 'User returned successfully', data: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error getting user', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //get user by ID
@@ -163,9 +163,9 @@ const userController = {
             }
             console.log('User returned successfully', user);
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'User returned successfully', user: removePassword(user)  });
+            res.status(200).send({ message: 'User returned successfully', data: removePassword(user)  });
         } catch (error) {
-            res.status(500).send({ message: 'Error getting user', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
     //delete a user with a specific ID
@@ -183,7 +183,7 @@ const userController = {
             console.log("------------------------------------------")
             res.status(200).send({ message: "User:" + userId + " is deleted by admin:" + adminId});
         } catch (error) {
-            res.status(500).send({ message: 'Error deleting user', error: error.message });
+            res.status(500).send({ message: error.message });
         }
     },
 };
