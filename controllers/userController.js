@@ -36,7 +36,7 @@ const userController = {
             const token = createToken(user);
             console.log('User logged in successfully', user);
             console.log("------------------------------------------")
-            res.status(200).send({ message: 'User logged in successfully', token: token});
+            res.status(200).send({ message: 'User logged in successfully', token: token, data: removePassword(user)});
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
