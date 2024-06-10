@@ -1,6 +1,6 @@
 const express = require('express');
 const freejoasController = require('../controllers/freejoasController');
-const { verifyToken, checkPermission } = require('../server/auth');
+const { verifyToken, checkPermission, ADMIN } = require('../server/auth');
 const router = express.Router();
 
 
@@ -11,13 +11,13 @@ router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passe
 router.get('/find/:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
 
 // upload a freejoa
-router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
+router.post('/upload', verifyToken, checkPermission([ADMIN]), freejoasController.uploadFreejoa);   //test passed
 
 // update a freejoa
-router.patch('/update', verifyToken, freejoasController.updateFreejoa);  //test passed
+router.patch('/update', verifyToken, checkPermission([ADMIN]), freejoasController.updateFreejoa);  //test passed
 
 // delete a freejoa with a specific ID
-router.delete('/delete',verifyToken, checkPermission(["admin"]), freejoasController.deleteFreejoa); //test passed
+router.delete('/delete',verifyToken, checkPermission([ADMIN]), freejoasController.deleteFreejoa); //test passed
 
 
 module.exports = router;

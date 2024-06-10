@@ -73,8 +73,13 @@ function checkPermission(requiredAccountTypes) {
   };
 }
 
+const ADMIN = "admin";
+const USER = "user";
+
 module.exports = {
   createToken,
   verifyToken,
-  checkPermission
+  checkPermission,
+  ADMIN,
+  USER
 };
