@@ -28,6 +28,7 @@
 //get environment variables
 const PORT = process.env.PORT; 
 const MONGO_DB_URL = process.env.MONGO_DB_URL;
+const AZURE_DB_URL = process.env.AZURE_DB_URL;
 
 //ininialize express app
 const express = require('express'); 
@@ -66,7 +67,8 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/freejoa', freejoaRouter);
 
 // Connect to MongoDB
-mongoose.connect(MONGO_DB_URL);
+// mongoose.connect(MONGO_DB_URL);
+mongoose.connect(AZURE_DB_URL);
 //check if the connection is successful
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -74,4 +76,3 @@ db.once('open', function() {
     console.info('Connected to MongoDB');
     console.info(`----------------------------`);
 });
-
