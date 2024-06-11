@@ -1,95 +1,156 @@
 # Freejoas-backend
  This is the back-end server for freejoas app
 
-Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), vist  [here](https://github.com/EugeneRaynerNZ/freejoas) to see more front-end detail. 
+Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), vist  [here](https://github.com/EugeneRaynerNZ/freejoas) to see more. 
 
 # API Documentation
 
 ## Overview
 
-**URL**:{baseUrl}/api/v1/
-- *Request parameters* : none
-- *Header* : 
+**URL**:{baseUrl}/api/v1/`Endpoint`
+- *Request Header* : 
     `Content-Type: application/json`
     `Authorization: "Bearer " + token`
-- *Response* :JSON format
+    Token is required for all endpoints except login and sign up. 
+- *Response Example* :
 ```json
     {
-        "message":"A message from endpoint",
+        "message":"Success message from endpoint",
         "data":"Object content"
     }
 ```
-- *Error* :JSON format
+- *Response Error Example* :
 ```json
     {
-        "message":"A message from endpoint",
-        "error":"Error message"
+        "message":"Error message from endpoint",
+        "error":"Error content"
     }
 ```
+
+- **User Object**
+```json
+{
+    "_id": "String",    // mongoose.Schema.Types.ObjectId
+    "avatar": "String",
+    "username": "String",
+    "firstname": "String",
+    "lastname": "String",
+    "email": "String",
+    "password": "String",
+    "googleSub": "String",
+    "accountType":"String",
+    "uploader": "String",   // mongoose.Schema.Types.ObjectId
+    "updatedBy": "String",  // mongoose.Schema.Types.ObjectId
+}
+```
+
 
 - **Freejoa Object**
 ```json
 {
- "latitude": "String",
-    "longitude": "String",
+    "latitude": "String",   // mongoose.Schema.Types.ObjectId
+    "longitude": "String", 
     "title": "String",
     "isActive": "Boolean",
-    "status": {
-        "type": "String",
-        "enum": ["low", "mid", "high"],
-    },
+    "status": "String",
     "image":[
         {
-            "_id": "mongoose.Schema.Types.ObjectId",   
-            "data": "String(base64)",
+            "_id": "String",    // mongoose.Schema.Types.ObjectId
+            "data": "String",   // base-64 image string
             "contentType": "String",
             "filename": "String",
         }
     ],
     "amount": "Number",
     "description": "String",
-    "uploader": "mongoose.Schema.Types.ObjectId",
-    "updatedBy": "mongoose.Schema.Types.ObjectId",
+    "uploader": "String",   // mongoose.Schema.Types.ObjectId
+    "updatedBy": "String",  // mongoose.Schema.Types.ObjectId
 }
 ```
 
-## User Endpoints
+## User Routers
 
 - **GET /user/all**
-    - *Description*: Retrieve all user object in database
+    - *Description*: Retrieve all user objects in database
     - *Required Account Type*: `admin`
-    - *Request body*: none
+    - *Request Body*: none
+    - *Respond Example*:
+    ```json
+    {
+        "message":"All users returned successfully",
+        "data": //User Object
+    }
+    ```
 
 - **GET /user/profile**
-    - *Description*: Only return the user object of the requesting user for receiving personal information.
+    - *Description*: returns the user object who started this request
     - *Required Account Type*: none
-    - *Request body*: none
-
+    - *Request Body*: none
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User returned successfully",
+        "data": //User Object
+    }
+    ```
 
 - **GET /user/find**
-    - *Description*: Return an user object with a required user ID
+    - *Description*: Return an user object by user id
     - *Required Account Type*: `admin`
-    - *Request body*: 
+    - *Request Body*: 
     ```json
     {
         "userId":"xxxxxxx"
+    }
+    ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User returned successfully",
+        "data": //User Object
     }
     ```
 
 - **POST /user/login**
     - *Description*:login endpoint
     - *Required Account Type*: none
-    - *Request body*: 
+    - *Request Body Example*: 
     ```json
     {
         "email":"xxxxxxx",
         "password":"xxxxxxx"
+    }
+    ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User logged in successfully",
+        "token": ,  // Token 
+        "data":     //User Object
+    }
+    ```
+- **POST /user/admin/login**
+    - *Description*: admin user login endpoint, for admin page only
+    - *Required Account Type*: none
+    - *Request Body Example*: 
+    ```json
+    {
+        "email":"xxxxxxx",
+        "password":"xxxxxxx"
+    }
+    ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User logged in successfully",
+        "token": ,  // Token 
+        "data":     //User Object
     }
     ```
 - **POST /user/create**
     - *Description*: Register new user
     - *Required Account Type*: none
-    - *Request body*: 
+    - *Request Body Example*: 
     ```json
     {
         "username":"xxxxxxx",
@@ -99,58 +160,79 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "password":"xxxxxxx"
     }
     ```
-- **PATCH /user/update**
-    - *Description*: Update user information, but this endpoint is not allowed for updating account types. In the future, password updates will also be separated into a separate endpoint from this one.
-    - *Required Account Type*: none
-    - *Request body*: 
+    - *Respond Example*:
     ```json
     {
-        "username":"xxxxxxx",
-        "firstname":"xxxxxxx",
-        "lastname":"xxxxxxx",
-        "email":"xxxxxxx",
+        "message":"New user created successfully",
+        "data":     //User Object
+    }
+    ```
+- **PATCH /user/update**
+    - *Description*: Update user information, but this endpoint is not allowed for updating account types. In the future, password updates will also be in a separated endpoint.
+    - *Required Account Type*: none
+    - *Request Body Example*: 
+    ```json
+    {
+       "key": "value",
         ...
+    }
+    ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User updated successfully",
+        "data":     //User Object
     }
     ```
 - **PATCH /user/accounttype**
     - *Description*: Only for update user's accounty type
     - *Required Account Type*: `admin`
-    - *Request body*: 
+    - *Request Body Example*: 
     ```json
     {
         "userId":"xxxxxxx",
         "accountType":"xxxxxxx",
     }
     ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User account type updated successfully",
+        "data":     //User Object
+    }
+    ```
 -   **DELETE /user/delete**
     - *Description*: delete a user by user ID
     - *Required Account Type*: `admin`
-    - *Request body*: 
+    - *Request Body Example*: 
     ```json
     {
-        "userId":"xxxxxxx",(required)
+        "userId":"xxxxxxx",
+    }
+    ```
+    - *Respond Example*:
+    ```json
+    {
+        "message":"User: {userId} is deleted by admin: {adminId}",
     }
     ```
 
-## Freejoa Endpoints
+## Freejoa Routers
 
 - **GET /freejoa/all**
     - *Description*: Retrieve all freejoa object in database
     - *Required Account Type*: none
-    - *Request body*: none
+    - *Request Body Example*: 
     ```json
     {
         "freejoaId":"xxxxxxx"
     }
     ```
-    - *Example Respond*
+    - *Respond Example*:
     ```json
     {
         "message":"All freejoas returned successfully",
-        "data": {
-           Freejoa Object 
-        },
-        ...
+        "data":     //Freejoa Object
     }
     ```
 
@@ -163,22 +245,18 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "freejoaId":"xxxxxxx",
     }
     ```
-    - *Example Respond*
+    - *Respond Example*:
     ```json
     {
-
         "message": "Freejoa is found",
-        "data": {
-            Freejoa Object 
-            },
-            ...
+        "data":     //Freejoa Object
     }
     ```
 
 - **POST /freejoa/upload**
     - *Description*: Upload a new freejoa
-    - *Required Account Type*: none
-    - *Request body*: 
+    - *Required Account Type*: `admin`
+    - *Request Body Example*: 
     ```json
     {
         "latitude":"xxxxxxx",
@@ -188,21 +266,20 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "description":"xxxxxxx",
     }
     ```
-    - *Example Respond*
+    - *Respond Example*:
     ```json
     {
-
         "message": "New freejoa uploaded successfully"
     }
     ```
 
 - **PATCH /freejoa/update**
-    - *Description*: update a new freejoa, `freejoaId` is required in request body
+    - *Description*: update a new freejoa.
     - *Required Account Type*: none
-    - *Request body*: 
+    - *Request Body Example*: 
     ```json
     {
-        "freejoaId":"xxxxxxx",
+        "freejoaId":"xxxxxxx",  // required
         "latitude":"xxxxxxx",
         "longitude":"xxxxxxx",
         "title":"xxxxxxx",
@@ -210,7 +287,7 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "description":"xxxxxxx",
     }
     ```
-    - *Example Respond*
+    - *Respond Example*:
     ```json
     {
 
@@ -227,11 +304,11 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
         "freejoaId":"xxxxxxx",
     }
     ```
-    - *Example Respond*
+    - *Respond Example*:
     ```json
     {
 
-        "message": "Freejoa: ${freejoaId} is deleted by admin: ${adminId}"
+        "message": "Freejoa: {freejoaId} is deleted by admin: {adminId}"
     }
     ```
 
