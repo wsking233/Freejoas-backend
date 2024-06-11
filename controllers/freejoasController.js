@@ -35,7 +35,7 @@ const freejoaController = {
             freejoa.updatedBy = userId;   //set the updatedBy to the current user
             await freejoa.save();
 
-            const user = userModel.findByIdAndUpdate(
+            const user = new userModel().findByIdAndUpdate(
                 userId,
                 { push: { uploads: freejoa._id } },
                 { new: true, runValidators: true }
