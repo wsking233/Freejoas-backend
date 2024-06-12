@@ -54,10 +54,7 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
     });
 
-app.post('/api/v1/sendemail', (req, res) => {
-    sendEmail();
-    res.send('Email sent');
-});
+
 
 // import models
 const userModel = require('./models/userModel');
@@ -66,11 +63,12 @@ const freejoasModel = require('./models/freejoaModel');
 // Import routers
 const userRouter = require('./routers/userRouter');
 const freejoaRouter = require('./routers/freejoaRouter');
-const { sendEmail } = require('./server/emailSender');
+const verificationRouter = require('./routers/verificationRouter');
 
 // Use the routers
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/freejoa', freejoaRouter);
+app.use('/api/v1/verification', verificationRouter );
 
 // Connect to MongoDB
 // mongoose.connect(MONGO_DB_URL);
