@@ -74,10 +74,10 @@ async function sendVerificationEmail(req, res) {
         // send mail with defined transport object
         await transporter.sendMail(mailOptions);
         console.log("verify url: ", verifyURL);
-        res.status(200).send('Verification email sent');
+        res.status(200).send({ message: 'Verification email sent' , data: verifyURL});
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error sending email');
+        res.status(500).send({ message: 'Failed to send verification email' });
     }
 }
 
