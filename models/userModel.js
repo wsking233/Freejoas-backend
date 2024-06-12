@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     googleSub: String,
     accountType: {type:String, required: true, default:"user"}, // 'admin' or 'user
     uploads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'freejoas' }],
+    isEmailVerified: {type:Boolean, default:false},
 },{
     timestamps: true
 });

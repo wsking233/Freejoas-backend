@@ -14,11 +14,11 @@
 //use this area in local environment only
 
 // Load local environment variables
-const dotenv = require('dotenv').config();
+// const dotenv = require('dotenv').config();
 
-if(dotenv.error){//check if the .env file is present
-    throw dotenv.error;
-}
+// if(dotenv.error){//check if the .env file is present
+//     throw dotenv.error;
+// }
 
 //comment this area out before pushing to cloud
 
@@ -35,6 +35,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const cors = require('cors');
+const path = require('path');
 
 // Create an express app
 const app = express();
@@ -69,6 +70,7 @@ const verificationRouter = require('./routers/verificationRouter');
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/freejoa', freejoaRouter);
 app.use('/api/v1/verification', verificationRouter );
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
 // mongoose.connect(MONGO_DB_URL);

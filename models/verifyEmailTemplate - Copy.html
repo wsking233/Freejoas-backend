@@ -1,4 +1,3 @@
-const verifyEmailTemplate = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,15 +56,12 @@ const verifyEmailTemplate = `
 <body>
 <div class="container">
   <h1>Email Verification</h1>
-  <p>Hi there,</p>
+  <p>Hi, <%= username%>,</p>
   <p>Thank you for registering Freejoas.com. Please verify your email address by clicking the button below:</p>
-  <a class="button" href="https://example.com/verify">Verify Email Address</a>
+  <a class="button" href="<%= verifyURL%>">Verify Email Address</a>
+  <p>This link only avabile for 1 hour, please verify ASAP. </p>
   <p>If you did not register for an account, you can safely ignore this email.</p>
-  <p class="footer">This email was sent by the developer of Freejoas.com. Please do not reply to this email.</p>
+  <p class="footer">This email was sent automatically. Please do not reply to this email.</p>
 </div>
 </body>
-</html>`;
-
-module.exports = {
-    verifyEmailTemplate,
-    };
+</html>

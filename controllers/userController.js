@@ -32,6 +32,11 @@ const userController = {
                 return res.status(401).send({ message: 'Invalid password' });
             }
 
+            if (!user.isEmailVerified) {
+                console.log('Email not verified');
+                return res.status(401).send({ message: 'Email not verified' });
+            }
+
             //create a token
             const token = createToken(user);
             console.log('User logged in successfully', user);
@@ -222,7 +227,7 @@ const userController = {
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
-    },
+    },    
 };
 
 module.exports = userController;
