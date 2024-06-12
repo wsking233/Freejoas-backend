@@ -14,11 +14,11 @@
 //use this area in local environment only
 
 // Load local environment variables
-// const dotenv = require('dotenv').config();
+const dotenv = require('dotenv').config();
 
-// if(dotenv.error){//check if the .env file is present
-//     throw dotenv.error;
-// }
+if(dotenv.error){//check if the .env file is present
+    throw dotenv.error;
+}
 
 //comment this area out before pushing to cloud
 
@@ -54,6 +54,11 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
     });
 
+app.post('/api/v1/sendemail', (req, res) => {
+    sendEmail();
+    res.send('Email sent');
+});
+
 // import models
 const userModel = require('./models/userModel');
 const freejoasModel = require('./models/freejoaModel');
@@ -61,6 +66,7 @@ const freejoasModel = require('./models/freejoaModel');
 // Import routers
 const userRouter = require('./routers/userRouter');
 const freejoaRouter = require('./routers/freejoaRouter');
+const { sendEmail } = require('./server/emailSender');
 
 // Use the routers
 app.use('/api/v1/user', userRouter);
