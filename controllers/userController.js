@@ -86,7 +86,6 @@ const userController = {
     //create a new user
     createUser: async (req, res) => {
         console.log('createUser called');
-        console.log('req.body:', req.body);
         try {
             //check the email is exists in database
             if (await userModel.findOne({ email: req.body.email })) {
