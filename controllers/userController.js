@@ -34,7 +34,7 @@ const userController = {
 
             if (!user.isEmailVerified) {
                 console.log('Email not verified');
-                return res.status(401).send({ message: 'Email not verified' });
+                return res.status(402).send({ message: 'Email not verified' });
             }
 
             //create a token
