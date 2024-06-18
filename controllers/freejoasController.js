@@ -1,12 +1,13 @@
 const { Mongoose } = require('mongoose');
 const freejoaModel = require('../models/freejoaModel');
 const userModel = require('../models/userModel');
+const pendingFreejoaModel = require('../models/pendingFreejoaModel');
 
 
 function removeImage(freejoa) {
     const freejoaObject = freejoa.toObject();
     freejoaObject.image = freejoaObject.image.map(image => {
-        if(image.data.length !== 0) image.data = "image data"; //replace the image data with a string
+        if (image.data.length !== 0) image.data = "image data"; //replace the image data with a string
         return image;
     });
     return freejoaObject;
@@ -29,22 +30,22 @@ const freejoaController = {
                 return res.status(404).send({ message: 'User not found' });
             }
 
-            //create a new freejoa
-            const freejoa = new freejoaModel(req.body);
+            //create a new freejo
+            const freejoa = new pendingFreejoaModel(req.body);  //upload the freejoa to the pendingFreejoa collection
             freejoa.uploader = userId;  //set the uploader to the current user
             freejoa.updatedBy = userId;   //set the updatedBy to the current user
             await freejoa.save();
 
             const user = new userModel().findByIdAndUpdate(
                 userId,
-                { push: { uploads: freejoa._id } },
+                { $push: { uploads: freejoa._id } },
                 { new: true, runValidators: true }
             )
 
             console.log("New freejoa created successfully");
             console.log("user uploads:", user.uploads)
             console.log("------------------------------------------")
-            res.status(201).send({ message: 'New freejoa uploaded successfully'});
+            res.status(201).send({ message: 'New freejoa uploaded successfully' });
         } catch (error) {
             console.log("Error creating freejoa", error);
             res.status(500).send({ message: error.message });
@@ -61,7 +62,7 @@ const freejoaController = {
             }
             console.log("All freejoas returned successfully");
             console.log("------------------------------------------");
-            res.status(200).send({message: 'All freejoas returned successfully', data: freejoas});
+            res.status(200).send({ message: 'All freejoas returned successfully', data: freejoas });
         } catch (error) {
             console.log("Error getting freejoas", error);
             res.status(500).send({ message: error.message });
@@ -88,47 +89,34 @@ const freejoaController = {
     //update a freejoa with a specific ID
     updateFreejoa: async (req, res) => {
         const userId = req.decodedToken._id;
-        const freejoaId = req.body.freejoaId; //get the freejoaId from the request body
-        console.log("updateFreejoa called with userID:", userId);
+        const { freejoaId, updatedData } = req.body;
+        console.log("submitUpdateRequest called with userID:", userId);
         try {
-            //get the freejoa by ID
+            //find the freejoa by ID
             const freejoa = await freejoaModel.findById(freejoaId);
-
-            if (!freejoa) { //if freejoa not found return 404
+            if (!freejoa) {
                 console.log("Freejoa not found, request ID: ", freejoaId);
                 return res.status(404).send({ message: 'Freejoa not found' });
             }
+            // create a new object with the updated data
+            const completeUpdatedData = {
+                ...freejoa.toObject(), // copy the original data
+                ...updatedData, //update the data with the new data
+            };
 
-            //check if imageId is in the request body
-            if (req.body.imageId) {
-                const imageId = req.body.imageId;
-                const imageFound = freejoa.image.id(imageId);   //find the image from the image array
-                if (!imageFound) {  //if image not found return 404
-                    console.log("Image not found, request ID: ", imageId);
-                    return res.status(404).send({ message: 'Image not found' });
-                }
-                imageFound.remove(); //delete the image
-            }
+            // create a new pending update request
+            const newPendingUpdate = new PendingFreejoa({
+                _id: freejoaId,
+                ...completeUpdatedData,
+                requestType: 'update',
+                updatedBy: userId
+            });
+            await newPendingUpdate.save();
 
-            //check if the request body contains image key
-            if (req.body.image) {
-                freejoa.image.push(req.body.image); //add the image to the freejoa
-            }
-
-            //check all other keys in the request body
-            for (const key in req.body) {
-                if (key !== "imageId" && key !== "image") {
-                    freejoa[key] = req.body[key];   //update the freejoa with the request body
-                }
-            }
-
-            freejoa.updatedBy = userId;   //set the updatedBy to the current user
-            await freejoa.save();    //save the updated freejoa
-
-            res.status(200).send({ message: 'Freejoa updated successfully'});
+            res.status(200).send({ message: 'Update request submitted successfully' });
             console.log("------------------------------------------");
         } catch (error) {
-            console.log("Error updating freejoa", error);
+            console.log("Error submitting update request", error);
             res.status(500).send({ message: error.message });
         }
     },

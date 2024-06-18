@@ -23,6 +23,16 @@ const pendingFreejoaSchema = new mongoose.Schema({
     description: String,
     uploader: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user'},
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    requestType: { 
+        /**
+         *  this key is used to determine the type of the pending freejoa
+         *  is used in the pending collection only
+         *  should be removed when transfered to the freejoa collection
+         */
+        type: String,
+        enum: ['upload', 'update'],
+        required: true
+    },
 },{
     timestamps: true
 });
@@ -36,4 +46,4 @@ pendingFreejoaSchema.pre('save', function(next){
     next();
 })
 
-module.exports = mongoose.model('freejoa', pendingFreejoaSchema);
+module.exports = mongoose.model('pending-freejoa', pendingFreejoaSchema);
