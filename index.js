@@ -10,15 +10,15 @@
 
 ///////////////////////////////////////////////////
 /*************************************************/
-
 //use this area in local environment only
-
 // Load local environment variables
-// const dotenv = require('dotenv').config();
 
+
+// const dotenv = require('dotenv').config();
 // if(dotenv.error){//check if the .env file is present
 //     throw dotenv.error;
 // }
+
 
 //comment this area out before pushing to cloud
 
@@ -60,16 +60,19 @@ app.listen(PORT, () => {
 // import models
 const userModel = require('./models/userModel');
 const freejoasModel = require('./models/freejoaModel');
+const pendingFreejoaModel = require('./models/pendingFreejoaModel');
 
 // Import routers
 const userRouter = require('./routers/userRouter');
 const freejoaRouter = require('./routers/freejoaRouter');
 const verificationRouter = require('./routers/verificationRouter');
+const adminRouter = require('./routers/adminRouter');
 
 // Use the routers
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/freejoa', freejoaRouter);
 app.use('/api/v1/verification', verificationRouter );
+app.use('/api/v1/admin', adminRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
