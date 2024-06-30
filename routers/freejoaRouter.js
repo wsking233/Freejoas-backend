@@ -11,7 +11,7 @@ router.get('/all',verifyToken, freejoasController.getAllFreejoas);  //test passe
 router.get('/find/:freejoaId',verifyToken, freejoasController.getFreejoaByID);   //test passed
 
 // upload a freejoa
-router.post('/upload', verifyToken, checkPermission([ADMIN]), freejoasController.uploadFreejoa);   //test passed
+router.post('/upload', verifyToken, freejoasController.uploadFreejoa);   //test passed
 
 // update a freejoa
 router.patch('/update', verifyToken, checkPermission([ADMIN]), freejoasController.updateFreejoa);  //test passed

@@ -5,13 +5,13 @@ const pendingFreejoaController = require('../controllers/pendingFreejoaControlle
 
 
 // get all pending freejoas
-router.get('/pending/freejoas/all', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.getAllUploadRequest); //only admin can get all pending freejoas
+router.get('/pending/freejoa/all', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.getAllUploadRequest); // test passed
 
 // approve pending freejoas
-router.patch('/pending/freejoas/approve', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.approvePendingFreejoas); //only admin can approve pending freejoas
+router.patch('/pending/freejoa/approve', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.approvePendingFreejoas); // test passed
 
 // reject pending freejoas
-router.delete('/pending/freejoas/reject', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.rejectPendingFreejoas); //only admin can reject pending freejoas
+router.delete('/pending/freejoa/reject', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.rejectPendingFreejoas);
 
 
 module.exports = router;

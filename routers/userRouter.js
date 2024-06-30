@@ -16,7 +16,7 @@ router.get('/find', verifyToken, checkPermission([ADMIN]), userController.getUse
 router.post('/login', userController.login);   //create a token and send it to the user
 
 // admin user login
-router.post('/admin/login', userController.adminLogin);   //create a token and send it to the user
+router.post('/admin/login', userController.adminLogin);   //test pass
 
 // create a new user
 router.post('/create', userController.createUser);  //no need to verify token
