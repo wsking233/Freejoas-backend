@@ -13,5 +13,7 @@ router.patch('/pending/freejoa/approve', verifyToken, checkPermission([ADMIN]), 
 // reject pending freejoas
 router.delete('/pending/freejoa/reject', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.rejectPendingFreejoas);
 
+// transfer data though database
+router.post('/pending/freejoa/transfer', verifyToken, checkPermission([ADMIN]), pendingFreejoaController.transferData);
 
 module.exports = router;
