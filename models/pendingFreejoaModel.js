@@ -10,40 +10,29 @@ const pendingFreejoaSchema = new mongoose.Schema({
         enum: ['low', 'mid', 'high'],
         default: 'mid'
     },
-    image:[
-        {
+    image:[{
             //auto generate the id
             _id: {type: mongoose.Schema.Types.ObjectId, auto: true, required: true},    
             data: String,
             contentType: String,
             filename: String,
-        }
-    ],
+        }],
     amount: Number,
     description: String,
     uploader: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'user'},
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-    requestType: { 
-        /**
-         *  this key is used to determine the type of the pending freejoa
-         *  is used in the pending collection only
-         *  should be removed when transfered to the freejoa collection
-         */
-        type: String,
-        enum: ['upload', 'update'],
-        required: true
-    },
+    // requestType: { 
+    //     /**
+    //      *  this key is used to determine the type of the pending freejoa
+    //      *  is used in the pending collection only
+    //      *  should be removed when transfered to the freejoa collection
+    //      */
+    //     type: String,
+    //     enum: ['upload', 'update'],
+    //     required: true
+    // },
 },{
     timestamps: true
 });
-
-
-pendingFreejoaSchema.pre('save', function(next){
-    this.image.forEach((image,index) =>{    //loop through the images
-        image.index = index;    //set the index of the image
-    })
-
-    next();
-})
 
 module.exports = mongoose.model('pending-freejoa', pendingFreejoaSchema);

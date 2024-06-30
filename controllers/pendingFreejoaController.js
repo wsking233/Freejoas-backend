@@ -1,6 +1,6 @@
-const { Mongoose } = require('mongoose');
 const pendingFreejoaModel = require('../models/pendingFreejoaModel');
 const freejoaModel = require('../models/freejoaModel');
+const {mongoose} = require('../server/db');
 
 const pendingFreejoaController = {
 
@@ -22,6 +22,12 @@ const pendingFreejoaController = {
         }
     },
 
+    removeImage:(object)=>{
+        //remove image key from a object
+        delete object.image;
+        return object;
+    },
+
     // approve pending freejoas
     approvePendingFreejoas: async (req, res) => {
         /**
@@ -36,7 +42,8 @@ const pendingFreejoaController = {
         try {
             // find all pending freejoas with the IDs
             const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIds } }).session(session);  
-            
+            console.log("Pending Freejoas found: ", pendingFreejoas);
+
             // no pending freejoas found
             if (pendingFreejoas.length === 0) {
                 console.log("No Pending Freejoas found, request IDs: ", freejoaIds);
@@ -44,19 +51,12 @@ const pendingFreejoaController = {
                 session.endSession();
                 return res.status(404).send({ message: 'No Pending Freejoas found' });
             }
-
-
-            // delete the requestType key from the pending freejoas
-            // and create new freejoas from the pending freejoas
-            const newFreejoas = pendingFreejoas.map(freejoa => {
-                delete freejoa.requestType; // delete the requestType key
-                return new freejoaModel(freejoa);   // create a new freejoa
-            });
+            
             // save the new freejoas
-            const savedFreejoas = await freejoaModel.insertMany(newFreejoas, { session });
+            const savedFreejoas = await freejoaModel.insertMany(pendingFreejoas, { session });
             
             // check if all pending freejoas were saved as new freejoas
-            if (savedFreejoas.length === newFreejoas.length) {
+            if (savedFreejoas.length === pendingFreejoas.length) {
                 // delete the pending freejoas
                 await pendingFreejoaModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);    
                 // commit the transaction
@@ -68,11 +68,13 @@ const pendingFreejoaController = {
                 await session.abortTransaction();
                 console.log("Error approving some pending freejoas");
                 res.status(500).send({ message: 'Error approving some pending freejoas' });
+                console.log("------------------------------------------");
             }
         } catch (error) {
             await session.abortTransaction();
             console.log("Error approving pending freejoas", error);
             res.status(500).send({ message: error.message });
+            console.log("------------------------------------------");
         } finally {
             // end the session
             session.endSession();

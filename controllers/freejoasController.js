@@ -19,6 +19,7 @@ const freejoaController = {
     //upload a new freejoa
     uploadFreejoa: async (req, res) => {
         const userId = req.decodedToken._id;
+        // const data =  req.body.freejoa;
         console.log("createFreejoa called with userID:", userId);
         try {
 
@@ -30,20 +31,27 @@ const freejoaController = {
                 return res.status(404).send({ message: 'User not found' });
             }
 
-            //create a new freejo
-            const freejoa = new pendingFreejoaModel(req.body);  //upload the freejoa to the pendingFreejoa collection
-            freejoa.uploader = userId;  //set the uploader to the current user
-            freejoa.updatedBy = userId;   //set the updatedBy to the current user
+            //create a new freejoa
+            const freejoa = new pendingFreejoaModel({   // upload the freejoa to the pendingFreejoa collection
+                ...req.body,
+                uploader: userId,   //add the uploader ID
+                updatedBy: userId  //add the updatedBy ID
+            });
             await freejoa.save();
 
-            const user = new userModel().findByIdAndUpdate(
+            console.log("reuqest body:", req.body);
+            
+
+            // add the freejoa to the user's uploads
+            const user = await userModel.findByIdAndUpdate(
                 userId,
                 { $push: { uploads: freejoa._id } },
                 { new: true, runValidators: true }
-            )
+            );
 
             console.log("New freejoa created successfully");
             console.log("user uploads:", user.uploads)
+            console.log("freejoa:", freejoa);
             console.log("------------------------------------------")
             res.status(201).send({ message: 'New freejoa uploaded successfully' });
         } catch (error) {
