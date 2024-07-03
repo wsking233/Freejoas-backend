@@ -26,7 +26,20 @@
 <body>
     <div class="container">
         <h1>Email Verified Successfully</h1>
-        <p>Thank you for verifying your email address. You can return to <a href="https://www.freejoas.com" >Freejoas</a> now.</p>
+        <p>Thank you for verifying your email address. You will be redirected to <a href="https://www.freejoas.com">Freejoas</a> in <span id="countdown">3</span> seconds.</p>
     </div>
+    <script>
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown === 0) {
+                clearInterval(interval);
+                window.location.href = "https://www.freejoas.com/login";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>

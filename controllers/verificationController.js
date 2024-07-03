@@ -61,6 +61,7 @@ async function sendVerificationEmail(req, res) {
     const createdAt = Date.now();
     emailTokens[email] = {token, createdAt};    // store the token and timestamp in memory
     const verifyURL = `https://freejoas.azurewebsites.net/api/v1/verification/verify?email=${email}&token=${token}`;
+    // const verifyURL = `http://localhost:4000/api/v1/verification/verify?email=${email}&token=${token}`;
 
     try {
         const htmlContent = ejs.render(verifyEmailTemplate, { username, verifyURL });
@@ -73,7 +74,7 @@ async function sendVerificationEmail(req, res) {
 
         // send mail with defined transport object
         await transporter.sendMail(mailOptions);
-        console.log("verify url: ", verifyURL);
+        // console.log("verify url: ", verifyURL);
         res.status(200).send({ message: 'Verification email sent' , data: verifyURL});
     } catch (error) {
         console.error(error);
