@@ -8,26 +8,10 @@
     * 
 **/
 
-///////////////////////////////////////////////////
-/*************************************************/
-//use this area in local environment only
-// Load local environment variables
 
-
-// const dotenv = require('dotenv').config();
-// if(dotenv.error){//check if the .env file is present
-//     throw dotenv.error;
-// }
-
-
-//comment this area out before pushing to cloud
-
-/*************************************************/
-///////////////////////////////////////////////////
-
-//get environment variables
-const PORT = process.env.PORT; 
-// const AZURE_DB_URL = process.env.AZURE_DB_URL;
+//load environment variables
+const config = require('./server/config');
+const PORT = config.PORT;
 
 //ininialize express app
 const express = require('express'); 
@@ -47,6 +31,8 @@ const freejoaRouter = require('./routers/freejoaRouter');
 const verificationRouter = require('./routers/verificationRouter');
 const adminRouter = require('./routers/adminRouter');
 
+
+
 // Create an express app
 const app = express();
 
@@ -62,6 +48,20 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/freejoa', freejoaRouter);
 app.use('/api/v1/verification', verificationRouter );
 app.use('/api/v1/admin', adminRouter);
+
+// // import version 2 routers
+// const authRouterV2 = require('./routers/version2/authRouter');
+// const userRouterV2 = require('./routers/version2/userRouter');
+// const adminRouterV2 = require('./routers/version2/adminRouter');
+// const freejoaRouterV2 = require('./routers/version2/freejoaRouter');
+
+// // use version 2 routers
+// app.use('/api/v2/users', userRouterV2);
+// app.use('/api/v2/freejoas', freejoaRouterV2);
+// app.use('/api/v2/admin', adminRouterV2);
+// app.use('/api/v2/auth', authRouterV2);
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
@@ -74,4 +74,4 @@ app.listen(PORT, () => {
 
 // Connect to the database
 const db = require('./server/db');
-db.connectDB();
+// db.connectDB();
