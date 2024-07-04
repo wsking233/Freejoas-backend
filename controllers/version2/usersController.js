@@ -235,6 +235,9 @@ const UsersController = {
             res.status(500).send({ message: error.message });
         }
     },
+
+    // send email verification
+    
 };
 
 module.exports = UsersController;
