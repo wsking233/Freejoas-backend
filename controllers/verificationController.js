@@ -87,8 +87,7 @@ function verifyEmail(req, res) {
     const record = emailTokens[email];
 
     if (!record) {  // no record found
-        console.log('No record found');
-        console.log('Invalid token');
+        console.log('No token record found');
         return res.redirect('/verificationFailed.html');
     }
 
@@ -116,7 +115,7 @@ setInterval(() => {
             delete emailTokens[email];
         }
     }
-}, 60 * 60 * 1000); // check every hour
+}, tokenLifetime); // check every hour
 
 // active user
 async function activeUser(email) {
