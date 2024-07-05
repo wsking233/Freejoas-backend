@@ -64,7 +64,7 @@ async function sendVerificationEmail(req, res) {
     const createdAt = Date.now();
     emailTokens[email] = {token, createdAt};    // store the token and timestamp in memory
     const verifyURLV1 = `${VERIFICATION_SERVER_DOMAIN}/api/v1/verification/verify?email=${email}&token=${token}`;
-    const verifyURLV2 = `${VERIFICATION_SERVER_DOMAIN_LOCAL}/api/v2/users/verify-email?email=${email}&token=${token}`;
+    const verifyURLV2 = `${VERIFICATION_SERVER_DOMAIN}/api/v2/users/verify-email?email=${email}&token=${token}`;
     const verifyURL = verifyURLV2;
 
     try {
