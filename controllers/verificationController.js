@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const ejs = require('ejs');
 const userModel = require('../models/userModel');
+const config = require('../server/config');
 
 ///////////////////////////////////////////////////
 /*************************************************/
@@ -24,10 +25,10 @@ const userModel = require('../models/userModel');
 
 
 // Load local environment variables get the password
-const EMAIL_SERVER_PASSWORD = process.env.EMAIL_SERVER_PASSWORD;
-const EMAIL_SERVER_DOMAIN = process.env.EMAIL_SERVER_DOMAIN;
-const EMAIL_SERVER_HOST = process.env.EMAIL_SERVER_HOST;
-const EMAIL_SERVER_PORT = process.env.EMAIL_SERVER_PORT;
+const EMAIL_SERVER_PASSWORD = config.EMAIL_SERVER_PASSWORD;
+const EMAIL_SERVER_DOMAIN = config.EMAIL_SERVER_DOMAIN;
+const EMAIL_SERVER_HOST = config.EMAIL_SERVER_HOST;
+const EMAIL_SERVER_PORT = config.EMAIL_SERVER_PORT;
 
 
 // Store email tokens in memory
