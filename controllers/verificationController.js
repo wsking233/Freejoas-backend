@@ -29,6 +29,8 @@ const EMAIL_SERVER_PASSWORD = config.EMAIL_SERVER_PASSWORD;
 const EMAIL_SERVER_DOMAIN = config.EMAIL_SERVER_DOMAIN;
 const EMAIL_SERVER_HOST = config.EMAIL_SERVER_HOST;
 const EMAIL_SERVER_PORT = config.EMAIL_SERVER_PORT;
+const VERIFICATION_SERVER_DOMAIN_LOCAL = config.VERIFICATION_SERVER_DOMAIN_LOCAL;
+const VERIFICATION_SERVER_DOMAIN = config.VERIFICATION_SERVER_DOMAIN;
 
 
 // Store email tokens in memory
@@ -61,7 +63,9 @@ async function sendVerificationEmail(req, res) {
     const token = generateToken();
     const createdAt = Date.now();
     emailTokens[email] = {token, createdAt};    // store the token and timestamp in memory
-    const verifyURL = `https://freejoas.azurewebsites.net/api/v1/verification/verify?email=${email}&token=${token}`;
+    const verifyURLV1 = `${VERIFICATION_SERVER_DOMAIN}/api/v1/verification/verify?email=${email}&token=${token}`;
+    const verifyURLV2 = `${VERIFICATION_SERVER_DOMAIN_LOCAL}/api/v2/users/verify-email?email=${email}&token=${token}`;
+    const verifyURL = verifyURLV2;
 
     try {
         const htmlContent = ejs.render(verifyEmailTemplate, { username, verifyURL });
@@ -73,7 +77,7 @@ async function sendVerificationEmail(req, res) {
         };
 
         // send mail with defined transport object
-        await transporter.sendMail(mailOptions);
+        // await transporter.sendMail(mailOptions);
         console.log("verify url: ", verifyURL);
         res.status(200).send({ message: 'Verification email sent' , data: verifyURL});
     } catch (error) {

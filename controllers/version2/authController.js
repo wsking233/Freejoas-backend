@@ -8,8 +8,15 @@
 
 const userModel = require('../../models/userModel');
 const bcrypt = require('bcrypt');
-const { createToken } = require('../server/auth');
+const { createToken } = require('../../server/auth');
 
+
+//remove password from the user object
+function removePassword(user) {
+    const userObject = user.toObject();
+    delete userObject.password;
+    return userObject;
+}
 
 const authController = {
      //login

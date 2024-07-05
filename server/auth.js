@@ -1,12 +1,10 @@
+const {TOKEN_SECRET} = require('./config');
 const jwt = require('jsonwebtoken');
 const expireTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 // const expireTime = 30*1000; // 30 seconds in milliseconds
 
 ////////////////////////////////////////////
-const dotenv = require('dotenv').config();  //use this in local environment only
 ////////////////////////////////////////////
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET;  //get the token secret from the environment variables
 
 function createToken(user) {
   //create a token with the user object

@@ -1,3 +1,7 @@
+const express = require('express');
+const router = express.Router();
+const { checkPermission, ADMIN } = require('../../server/auth');
+const authController = require('../../controllers/version2/authController');
 /**
  * Auth Router
  * @version 2
@@ -5,10 +9,6 @@
  * This router handles authentication-related routes.
  */
 
-const express = require('express');
-const router = express.Router();
-const { checkPermission, ADMIN } = require('../server/auth');
-const authController = require('../../controllers/version2/authController');
 
 /**
  * User Login
@@ -18,7 +18,7 @@ const authController = require('../../controllers/version2/authController');
  * 
  * Handles user login requests.
  */
-router.post('/auth/user/login', authController.userLogin);
+router.post('/user/login', authController.userLogin);
 
 /**
  * Admin Login
@@ -29,6 +29,6 @@ router.post('/auth/user/login', authController.userLogin);
  * 
  * Handles admin login requests. Requires admin permission.
  */
-router.post('/auth/admin/login', checkPermission([ADMIN]), authController.adminLogin);
+router.post('/admin/login', authController.adminLogin);
 
 module.exports = router;

@@ -49,18 +49,14 @@ app.use('/api/v1/freejoa', freejoaRouter);
 app.use('/api/v1/verification', verificationRouter );
 app.use('/api/v1/admin', adminRouter);
 
-// // import version 2 routers
-// const authRouterV2 = require('./routers/version2/authRouter');
-// const userRouterV2 = require('./routers/version2/userRouter');
-// const adminRouterV2 = require('./routers/version2/adminRouter');
-// const freejoaRouterV2 = require('./routers/version2/freejoaRouter');
+// import version 2 routers
+const authRouterV2 = require('./routers/version2/authRouter');
+const userRouterV2 = require('./routers/version2/userRouter');
 
-// // use version 2 routers
-// app.use('/api/v2/users', userRouterV2);
-// app.use('/api/v2/freejoas', freejoaRouterV2);
-// app.use('/api/v2/admin', adminRouterV2);
-// app.use('/api/v2/auth', authRouterV2);
 
+// use version 2 routers
+app.use('/api/v2/auth', authRouterV2);  // test pass
+app.use('/api/v2/users', userRouterV2);  // test pass
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -74,4 +70,4 @@ app.listen(PORT, () => {
 
 // Connect to the database
 const db = require('./server/db');
-// db.connectDB();
+db.connectDB();
