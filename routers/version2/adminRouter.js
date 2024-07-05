@@ -27,12 +27,23 @@ router.delete('/users', verifyToken, checkPermission([ADMIN]), userController.de
 // update a freejoa
 // router.patch('/freejoas/:freejoaId/update', verifyToken, checkPermission([ADMIN]), freejoaController.updateFreejoa);
 
+
+// get all pending freejoas
+router.get('/freejoas/pending', verifyToken, checkPermission([ADMIN]), freejoaController.getAllPendingFreejoas);
+
+// approve pending freejoas
+router.patch('/freejoas/pending/approve', verifyToken, checkPermission([ADMIN]), freejoaController.approvePendingFreejoas);
+
 // delete a freejoa
 router.delete('/freejoas/delete', verifyToken, checkPermission([ADMIN]), freejoaController.deleteFreejoa);
 
+// reject pending freejoas
+router.delete('/freejoas/pending/reject', verifyToken, checkPermission([ADMIN]), freejoaController.rejectPendingFreejoas);
+
+
 
 /**
- * admin related routes
+ * other admin related routes
  */
 
 

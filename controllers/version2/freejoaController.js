@@ -1,3 +1,4 @@
+const { mongoose } = require('../../server/db');
 const freejoaModel = require('../../models/freejoaModel');
 const userModel = require('../../models/userModel');
 const pendingFreejoaModel = require('../../models/pendingFreejoaModel');
@@ -10,15 +11,15 @@ const pendingFreejoaModel = require('../../models/pendingFreejoaModel');
 
 const freejoaController = {
 
-        /**
-     * Upload a new freejoa.
-     * @async
-     * @function uploadFreejoa
-     * @memberof freejoaController
-     * @param {Object} req - The request object.
-     * @param {Object} res - The response object.
-     * @returns {Promise<void>} A Promise that resolves when the freejoa is uploaded.
-     */
+    /**
+ * Upload a new freejoa.
+ * @async
+ * @function uploadFreejoa
+ * @memberof freejoaController
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves when the freejoa is uploaded.
+ */
 
     uploadFreejoa: async (req, res) => {
         const userId = req.decodedToken._id;
@@ -59,7 +60,7 @@ const freejoaController = {
         }
     },
 
-    
+
     /**
      * Get all freejoas or find freejoa by IDs.
      * @async
@@ -80,7 +81,7 @@ const freejoaController = {
             if (req.query.freejoaIds) {
                 // find freejoas by IDs
                 const foundFreejoas = await freejoaModel.find({ _id: { $in: req.query.freejoaIds } });
-                
+
                 // check if no freejoas are found
                 if (foundFreejoas.length === 0) {
                     return res.status(404).send({ message: 'No freejoas found with the provided freejoa IDs' });
@@ -93,7 +94,7 @@ const freejoaController = {
                 }
 
                 freejoas = foundFreejoas;
-            }else{
+            } else {
                 // if there is no freejoaIds query, get all freejoas
                 freejoas = await freejoaModel.find({});
             }
@@ -119,15 +120,15 @@ const freejoaController = {
     },
 
 
-     /**
-     * delete a freejoa with a specific ID.
-     * @async
-     * @function deleteFreejoa
-     * @memberof freejoaController
-     * @param {Object} req - The request object.
-     * @param {Object} res - The response object.
-     * @returns {Promise<void>} A Promise that resolves when the freejoa is deleted.
-     */
+    /**
+    * delete a freejoa with a specific ID.
+    * @async
+    * @function deleteFreejoa
+    * @memberof freejoaController
+    * @param {Object} req - The request object.
+    * @param {Object} res - The response object.
+    * @returns {Promise<void>} A Promise that resolves when the freejoa is deleted.
+    */
 
     deleteFreejoa: async (req, res) => {
         const adminId = req.decodedToken._id;
@@ -174,6 +175,117 @@ const freejoaController = {
             res.status(500).send({ message: error.message });
         }
     },
+
+    
+    // get all pending freejoas
+    getAllPendingFreejoas: async (req, res) => {
+        const userId = req.decodedToken._id;
+        console.log("getAllPendingFreejoas called with userID:", userId);
+        try {
+            const freejoas = await pendingFreejoaModel.find({});
+            if (freejoas.length === 0) {
+                return res.status(200).send({ message: 'database is currently empty' });
+            }
+            console.log("All pending freejoas returned successfully");
+            console.log("------------------------------------------");
+            res.status(200).send({
+                message: 'All pending freejoas returned successfully',
+                data: freejoas
+            });
+        } catch (error) {
+            console.log("Error getting pending freejoas", error);
+            res.status(500).send({ message: error.message });
+        }
+    },
+
+    // approve pending freejoas
+    approvePendingFreejoas: async (req, res) => {
+        /**
+         * This function approves pending freejoas by creating new freejoas 
+         * from the pending freejoas collection to the freejoas collection
+         */
+        const userId = req.decodedToken._id;
+        const { freejoaIds } = req.body.query;    // receive an array of freejoa IDs
+        console.log("approvePendingFreejoas called with userID:", userId);
+        const session = await mongoose.startSession();  // start a session to make sure all operations are atomic
+        session.startTransaction();
+        try {
+            // find all pending freejoas with the IDs
+            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIds } }).session(session);
+            console.log("Pending Freejoas found: ", pendingFreejoas);
+
+            // no pending freejoas found
+            if (pendingFreejoas.length === 0) {
+                console.log("No Pending Freejoas found, request IDs: ", freejoaIds);
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).send({ message: 'No Pending Freejoas found' });
+            }
+
+            // save the new freejoas
+            const savedFreejoas = await freejoaModel.insertMany(pendingFreejoas, { session });
+
+            // check if all pending freejoas were saved as new freejoas
+            if (savedFreejoas.length === pendingFreejoas.length) {
+                // delete the pending freejoas
+                await pendingFreejoaModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);
+                // commit the transaction
+                await session.commitTransaction();
+                console.log("Pending Freejoas approved successfully");
+                res.status(200).send({ message: 'Pending Freejoas approved successfully' });
+                console.log("------------------------------------------");
+            } else {
+                await session.abortTransaction();
+                console.log("Error approving some pending freejoas");
+                res.status(500).send({ message: 'Error approving some pending freejoas' });
+                console.log("------------------------------------------");
+            }
+        } catch (error) {
+            await session.abortTransaction();
+            console.log("Error approving pending freejoas", error);
+            res.status(500).send({ message: error.message });
+            console.log("------------------------------------------");
+        } finally {
+            // end the session
+            session.endSession();
+        }
+    },
+
+    // reject pending freejoas
+    rejectPendingFreejoas: async (req, res) => {
+        const userId = req.decodedToken._id;
+        const { freejoaIds } = req.body.query;   // receive an array of freejoa IDs
+        console.log("rejectPendingFreejoas called with userID:", userId);
+        const session = await mongoose.startSession();  // start a session to make sure all operations are atomic
+        session.startTransaction();
+        try {
+            // find all pending freejoas with the IDs
+            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIds } }).session(session);
+            
+            // no pending freejoas found
+            if (pendingFreejoas.length === 0) {
+                console.log("No Pending Freejoas found, request IDs: ", freejoaIds);
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(404).send({ message: 'No Pending Freejoas found' });
+            }
+
+            // delete the pending freejoas
+            await pendingFreejoaModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);
+            await session.commitTransaction();
+            console.log("Pending Freejoas rejected successfully");
+            res.status(200).send({ message: 'Pending Freejoas rejected successfully' });
+            console.log("------------------------------------------");
+        } catch (error) {
+            await session.abortTransaction();
+            console.log("Error rejecting pending freejoas", error);
+            res.status(500).send({ message: error.message });
+        } finally {
+            // end the session
+            session.endSession();
+        }
+    },
+
 
 };
 
