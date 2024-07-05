@@ -140,14 +140,12 @@ const UsersController = {
         console.log('getUsersByIdsOrAll called with adminID:', adminId);
 
         try {
-            let users;
+            let users;  // to store the users found
             let notFoundUserIds = []; // to store IDs of users not found
 
             if (req.query.userIds) { // if there is an userIds parameter in the query
-                // split the userIds by comma
-                const userIds = req.query.userIds.split(',');
                 // find users by IDs
-                const foundUsers = await userModel.find({ _id: { $in: userIds } });
+                const foundUsers = await userModel.find({ _id: { $in: req.query.userIds } });
                 // get the IDs of users not found
                 const foundUserIds = foundUsers.map(user => user._id.toString());
                 notFoundUserIds = userIds.filter(id => !foundUserIds.includes(id));

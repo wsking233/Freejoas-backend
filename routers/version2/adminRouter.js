@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken, checkPermission, ADMIN } = require('../server/auth');
 const userController = require('../../controllers/version2/usersController');
+const freejoaController = require('../../controllers/version2/freejoaController');
 
 /**
  *  user related routes
@@ -24,10 +25,10 @@ router.delete('/users', verifyToken, checkPermission([ADMIN]), userController.de
  */
 
 // update a freejoa
-router.patch('/:freejoaId/update', verifyToken, checkPermission([ADMIN]), freejoasController.updateFreejoa);
+// router.patch('/freejoas/:freejoaId/update', verifyToken, checkPermission([ADMIN]), freejoaController.updateFreejoa);
 
 // delete a freejoa
-router.delete('/delete', verifyToken, checkPermission([ADMIN]), freejoasController.deleteFreejoa);
+router.delete('/freejoas/delete', verifyToken, checkPermission([ADMIN]), freejoaController.deleteFreejoa);
 
 
 /**
