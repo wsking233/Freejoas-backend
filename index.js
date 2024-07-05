@@ -52,11 +52,15 @@ app.use('/api/v1/admin', adminRouter);
 // import version 2 routers
 const authRouterV2 = require('./routers/version2/authRouter');
 const userRouterV2 = require('./routers/version2/userRouter');
+const freejoaRouterV2 = require('./routers/version2/freejoaRouter');
+const adminRouterV2 = require('./routers/version2/adminRouter');
 
 
 // use version 2 routers
 app.use('/api/v2/auth', authRouterV2);  // test pass
 app.use('/api/v2/users', userRouterV2);  // test pass
+app.use('/api/v2/freejoas', freejoaRouterV2);  // test pass
+app.use('/api/v2/admin', adminRouterV2);  // test pass
 
 app.use(express.static(path.join(__dirname, 'public')));
 

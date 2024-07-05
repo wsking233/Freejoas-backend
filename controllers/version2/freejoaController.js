@@ -79,8 +79,15 @@ const freejoaController = {
 
             // check if there is an freejoaIds query
             if (req.query.freejoaIds) {
+                let freejoaIds = req.query.freejoaIds;
+                // check if freejoaIds is an array
+                if (!Array.isArray(freejoaIds)) {
+                    // split the string into an array of IDs
+                    freejoaIds = freejoaIds.split(',');
+                }
+
                 // find freejoas by IDs
-                const foundFreejoas = await freejoaModel.find({ _id: { $in: req.query.freejoaIds } });
+                const foundFreejoas = await freejoaModel.find({ _id: { $in: freejoaIds } });
 
                 // check if no freejoas are found
                 if (foundFreejoas.length === 0) {
@@ -88,9 +95,9 @@ const freejoaController = {
                 }
 
                 // check if all freejoas are found
-                if (foundFreejoas.length !== req.query.freejoaIds.length) {
+                if (foundFreejoas.length !== freejoaIds.length) {
                     // get the IDs of the freejoas that are not found
-                    notFundFreejoaIds = req.query.freejoaIds.filter(id => !foundFreejoas.map(freejoa => freejoa._id).includes(id));
+                    notFundFreejoaIds = freejoaIds.filter(id => !foundFreejoas.map(freejoa => freejoa._id.toString()).includes(id));
                 }
 
                 freejoas = foundFreejoas;

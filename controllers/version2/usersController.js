@@ -47,6 +47,8 @@ const UsersController = {
         //check if token _id is the same as the parameter _id
         if (userId !== req.params.userId) {
             console.log('You are not authorized to update this user');
+            console.log('user ID:', userId);
+            console.log('param ID:', req.params.userId);
             return res.status(403).send({ message: 'Unauthorised opreation' });
         }
 
@@ -85,12 +87,15 @@ const UsersController = {
 
         // check if currentPassword and newPassword are in the request body
         if (!currentPassword || !newPassword) {
+            console.log('Please provide current Password and new Password');
+            console.log("------------------------------------------")
             return res.status(400).send({ message: 'Please provide current Password and new Password' });
         }
 
         //check if token _id is the same as the parameter _id
         if (userId !== req.params.userId) {
             console.log('You are not authorized to update this user');
+            console.log("------------------------------------------")
             return res.status(403).send({ message: 'Unauthorised opreation' });
         }
 
@@ -98,18 +103,24 @@ const UsersController = {
             // find the user by ID
             const user = await userModel.findById(userId);
             if (!user) {
+                console.log('User not found');
+                console.log("------------------------------------------")
                 return res.status(404).send({ message: 'User not found' });
             }
 
             // check if the current password is correct
             const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
             if (!isPasswordCorrect) {
+                console.log('Current password is incorrect');
+                console.log("------------------------------------------")
                 return res.status(401).send({ message: 'Current password is incorrect' });
             }
 
             // check if the new password is the same as the current password
             const isSamePassword = await bcrypt.compare(newPassword, user.password);
             if (isSamePassword) {
+                console.log('New password cannot be the same as the current password');
+                console.log("------------------------------------------")
                 return res.status(400).send({ message: 'New password cannot be the same as the current password' });
             }
 
@@ -126,11 +137,40 @@ const UsersController = {
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
+    },
 
+    updateAccountType: async (req, res) => {
+        const adminId = req.decodedToken._id;
+        const userId = req.params.userId;
+        const {accountType} = req.body;
+        console.log('updateAccountType called with userID:', adminId);
 
+        // check if accountType is in the request body
+        if (!accountType) {
+            console.log('Please provide accountType');
+            console.log("------------------------------------------")
+            return res.status(400).send({ message: 'Please provide accountType' });
+        }
 
+        try {
+            // find the user by ID
+            const user = await userModel.findById(userId);
+            if (!user) {
+                console.log('User not found');
+                console.log("------------------------------------------")
+                return res.status(404).send({ message: 'User not found' });
+            }
 
+            // update the user with the new accountType
+            user.accountType = accountType;
+            await user.save();
 
+            console.log('Account type updated successfully');
+            console.log("------------------------------------------")
+            res.status(200).send({ message: 'Account type updated successfully' });
+        } catch (error) {
+            res.status(500).send({ message: error.message });
+        }
     },
 
 

@@ -1,14 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const { verifyToken, checkPermission, ADMIN } = require('../server/auth');
-const userController = require('../../controllers/version2/usersController');
-const freejoaController = require('../../controllers/version2/freejoaController');
-
 /**
  * @module adminRouter
  * @description Router for admin-related routes.
  * @version 2
  */
+
+const express = require('express');
+const router = express.Router();
+const { verifyToken, checkPermission, ADMIN } = require('../../server/auth');
+const userController = require('../../controllers/version2/usersController');
+const freejoaController = require('../../controllers/version2/freejoaController');
 
 /**
  * @name GET /users

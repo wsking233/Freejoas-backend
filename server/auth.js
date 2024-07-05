@@ -39,6 +39,7 @@ function verifyToken(req, res, next) {
     jwt.verify(splitToken[1], TOKEN_SECRET, { ignoreExpiration: false }, (error, decoded) => {
       if (error) {
         //return a 401 status code if the token is invalid
+        console.log("Error:", error.message);
         console.log("Invalid token");
         return res.status(401).send({ message: 'Invalid token' });
       } 
