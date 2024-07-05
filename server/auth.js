@@ -1,12 +1,10 @@
+const {TOKEN_SECRET} = require('./config');
 const jwt = require('jsonwebtoken');
 const expireTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 // const expireTime = 30*1000; // 30 seconds in milliseconds
 
 ////////////////////////////////////////////
-const dotenv = require('dotenv').config();  //use this in local environment only
 ////////////////////////////////////////////
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET;  //get the token secret from the environment variables
 
 function createToken(user) {
   //create a token with the user object
@@ -41,6 +39,7 @@ function verifyToken(req, res, next) {
     jwt.verify(splitToken[1], TOKEN_SECRET, { ignoreExpiration: false }, (error, decoded) => {
       if (error) {
         //return a 401 status code if the token is invalid
+        console.log("Error:", error.message);
         console.log("Invalid token");
         return res.status(401).send({ message: 'Invalid token' });
       } 

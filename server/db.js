@@ -1,4 +1,4 @@
-const MONGO_DB_URL = process.env.MONGO_DB_URL;
+const { MONGO_DB_URL } = require('./config');
 
 const mongoose = require('mongoose');
 
