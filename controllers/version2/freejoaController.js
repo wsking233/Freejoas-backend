@@ -400,6 +400,58 @@ const freejoaController = {
             session.endSession();
         }
     },
+    transferFreejoa: async (req, res) => {
+        const { sourceModelName, destinationModelName, freejoaIds } = req.body;
+        const session = await mongoose.startSession();
+        session.startTransaction();
+    
+        try {
+            // Check if required parameters are provided
+            if (!sourceModelName || !destinationModelName || !freejoaIds || !Array.isArray(freejoaIds) || freejoaIds.length === 0) {
+                throw new Error('Invalid request parameters');
+            }
+    
+            // Dynamically fetch models based on model names
+            const SourceModel = mongoose.model(sourceModelName);
+            const DestinationModel = mongoose.model(destinationModelName);
+    
+            // Find documents in the source model by ids
+            const documents = await SourceModel.find({ _id: { $in: freejoaIds } }).session(session);
+    
+            // Check if all documents were found
+            if (documents.length !== freejoaIds.length) {
+                await session.abortTransaction();
+                session.endSession();
+                const foundIds = documents.map(doc => doc._id.toString());
+                const notFoundIds = freejoaIds.filter(id => !foundIds.includes(id));
+                console.log(`Documents not found in ${sourceModelName}: ${notFoundIds.join(', ')}`);
+                return res.status(404).json({ message: `Documents not found in ${sourceModelName}: ${notFoundIds.join(', ')}` });
+            }
+    
+            // Insert documents into destination model
+            const insertedDocuments = await DestinationModel.insertMany(documents, { session });
+    
+            // Check if all documents were successfully inserted
+            if (insertedDocuments.length === documents.length) {
+                // Delete documents from source model
+                await SourceModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);
+                await session.commitTransaction();
+                session.endSession();
+                console.log(`Data transferred successfully from ${sourceModelName} to ${destinationModelName}`);
+                return res.status(200).json({ message: `Data transferred successfully from ${sourceModelName} to ${destinationModelName}` });
+            } else {
+                await session.abortTransaction();
+                session.endSession();
+                console.log(`Error transferring data from ${sourceModelName} to ${destinationModelName}`);
+                return res.status(500).json({ message: `Error transferring data from ${sourceModelName} to ${destinationModelName}` });
+            }
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+            console.error(`Error transferring data: ${error.message}`);
+            return res.status(500).json({ message: `Error transferring data: ${error.message}` });
+        }
+    }
 
 
 };
