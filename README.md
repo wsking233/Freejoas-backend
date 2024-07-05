@@ -3,11 +3,11 @@
 
 Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), vist  [here](https://github.com/EugeneRaynerNZ/freejoas) to see more. 
 
+
 # API Documentation
 
 ## Overview
 
-**URL**:{baseUrl}/api/v1/`Endpoint`
 - *Request Header* : 
     `Content-Type: application/json`
     `Authorization: "Bearer " + token`
@@ -45,7 +45,7 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
 ```
 
 
-- **Freejoa Object**
+- **Freejoa Object && pending-Freejoa Object**
 ```json
 {
     "latitude": "String",   // mongoose.Schema.Types.ObjectId
@@ -68,6 +68,42 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
 }
 ```
 
+# APIs - Version 2
+This document outlines the APIs available for managing user-related operations in Version 2 of the application.
+
+
+**URL**:{baseUrl}/api/v2/`Endpoint`
+
+## Create a New User
+
+- **URL:** `POST`: `/users`
+- **Description:** Create a new user account.
+- **Parameters:** None required.
+- **Request Body:** Should contain user information.
+    - **Example:** 
+  ```json
+  {
+    "username": "exampleUser",
+    "email": "user@example.com",
+    "password": "********"
+  }
+  ```
+- **Response:** Returns the created user object.
+    - **Example:** 
+  ```json
+  {
+    "message": "New user created successfully"
+  }
+  ```
+
+## freejoa Routers
+## Auth Routers
+## admin Routers
+
+
+
+# APIs - Version 1
+**URL**:{baseUrl}/api/v1/`Endpoint`
 ## User Routers
 
 - **GET /user/all**
