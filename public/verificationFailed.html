@@ -29,8 +29,27 @@
         <p>Sorry, the verification link is invalid or has expired. 
         </p>
         <p>
-            Please request a new verification email. Return to <a href="https://www.freejoas.com">Freejoas</a>
+            Please request a new verification email. 
+            Return to Freejoas in <span id="countdown">3</span> seconds.
         </p>
+        <p>
+            if page does not redirect, click <a href="https://www.freejoas.com/home">here</a> to return to Freejoas.
+        </p>
+
+
     </div>
+    <script>
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown === 0) {
+                clearInterval(interval);
+                window.location.href = "https://www.freejoas.com/home";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
