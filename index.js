@@ -31,8 +31,6 @@ const freejoaRouter = require('./routers/freejoaRouter');
 const verificationRouter = require('./routers/verificationRouter');
 const adminRouter = require('./routers/adminRouter');
 
-
-
 // Create an express app
 const app = express();
 
@@ -60,7 +58,7 @@ const adminRouterV2 = require('./routers/version2/adminRouter');
 app.use('/api/v2/auth', authRouterV2);  // test pass
 app.use('/api/v2/users', userRouterV2);  // test pass
 app.use('/api/v2/freejoas', freejoaRouterV2);  // test pass
-app.use('/api/v2/admin', adminRouterV2);  // test pass
+app.use('/api/v2/admin', adminRouterV2); 
 
 app.use(express.static(path.join(__dirname, 'public')));
 

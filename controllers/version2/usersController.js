@@ -5,6 +5,7 @@
 
 const userModel = require('../../models/userModel');
 const bcrypt = require('bcrypt');
+const { ADMIN, USER } = require('../../server/auth');
 
 
 //remove password from the user object
@@ -142,7 +143,7 @@ const UsersController = {
     updateAccountType: async (req, res) => {
         const adminId = req.decodedToken._id;
         const userId = req.params.userId;
-        const {accountType} = req.body;
+        const { accountType } = req.body;
         console.log('updateAccountType called with userID:', adminId);
 
         // check if accountType is in the request body
@@ -150,6 +151,14 @@ const UsersController = {
             console.log('Please provide accountType');
             console.log("------------------------------------------")
             return res.status(400).send({ message: 'Please provide accountType' });
+        }
+
+        // check if accountType is either USER or ADMIN
+        if (accountType.trim() !== USER && accountType.trim() !== ADMIN) {
+            console.log('Invalid account type');
+            console.log('accountType:', accountType);
+            console.log("------------------------------------------")
+            return res.status(400).send({ message: 'Invalid account type' });
         }
 
         try {
@@ -177,23 +186,36 @@ const UsersController = {
     // get all users or get users by IDs
     getUsersByIdsOrAll: async (req, res) => {
         const adminId = req.decodedToken._id;
+        const { userIds } = req.query;
         console.log('getUsersByIdsOrAll called with adminID:', adminId);
+
+        let userIdsArray = []; // to store the userIds array
+        if (userIds) {
+            console.log('userIds:', userIds);
+            // split the userIds string into an array of userIds
+            userIdsArray = userIds.split(',');
+        }
+
 
         try {
             let users;  // to store the users found
             let notFoundUserIds = []; // to store IDs of users not found
 
-            if (req.query.userIds) { // if there is an userIds parameter in the query
+            if (userIdsArray.length > 0) { // if there is an userIds parameter in the query
                 // find users by IDs
-                const foundUsers = await userModel.find({ _id: { $in: req.query.userIds } });
-                // get the IDs of users not found
-                const foundUserIds = foundUsers.map(user => user._id.toString());
-                notFoundUserIds = userIds.filter(id => !foundUserIds.includes(id));
+                const foundUsers = await userModel.find({ _id: { $in: userIdsArray } });
 
                 // if no users found, return 404
                 if (foundUsers.length === 0) {
                     res.status(404).json({ message: 'Users not found' });
                     return;
+                }
+
+                // check if all users are found
+                if (foundUsers.length !== userIdsArray.length) {
+                    // get the IDs of users not found
+                    const foundUserIds = foundUsers.map(user => user._id.toString());
+                    notFoundUserIds = userIdsArray.filter(id => !foundUserIds.includes(id));
                 }
 
                 users = foundUsers;
@@ -209,7 +231,7 @@ const UsersController = {
                 // if some requested users are not found, return 200 with a message
                 console.log('some users not found:', notFoundUserIds);
                 res.status(200).json({
-                    message: `Some users not found: ${notFoundUserIds.join(', ')}`,
+                    message: `User returned successfully, but some users not found: ${notFoundUserIds.join(', ')}`,
                     data: safeUsers
                 });
             } else {
@@ -231,14 +253,28 @@ const UsersController = {
         const { userIds } = req.query; //get the userId from the request body
         console.log('deleteUser called with userID:', adminId);
 
-        if (!Array.isArray(userIds) || userIds.length === 0) {
-            return res.status(400).send({ message: 'No user ids found in the request body' });
+        // check if userIds is in the request body
+        if (!userIds) {
+            console.log('userIds not found in the request body');
+            console.log("------------------------------------------")
+            return res.status(400).send({ message: 'Please provide userIds' });
         }
+
+        // split the userIds string into an array of userIds
+        const userIdsArray = userIds.split(',');
+
+        // check if the userIds array is empty
+        if (userIdsArray.length === 0) {
+            console.log('userIds array is empty');
+            console.log("------------------------------------------")
+            return res.status(400).send({ message: 'Please provide userIds' });
+        }
+
 
         try {
             let notFoundUserIds = []; // to store IDs of users not found
             // find users by IDs
-            const users = await userModel.find({ _id: { $in: userIds } });
+            const users = await userModel.find({ _id: { $in: userIdsArray } });
 
             // check if no users found
             if (!users || users.length === 0) {
@@ -246,20 +282,20 @@ const UsersController = {
             }
 
             // check if all users are found
-            if (users.length !== userIds.length) {
+            if (users.length !== userIdsArray.length) {
                 // get the IDs of users not found
                 const foundUserIds = users.map(user => user._id.toString());
-                notFoundUserIds = userIds.filter(id => !foundUserIds.includes(id));
+                notFoundUserIds = userIdsArray.filter(id => !foundUserIds.includes(id));
             }
 
             // delete users
-            await userModel.deleteMany({ _id: { $in: userIds } });
+            await userModel.deleteMany({ _id: { $in: userIdsArray } });
 
             // if notFoundUserIds is not empty, return 200 with a message
             if (notFoundUserIds.length > 0) {
                 console.log('some users not found:', notFoundUserIds);
                 res.status(200).json({
-                    message: `Some users not found: ${notFoundUserIds.join(', ')}`,
+                    message: `Users deleted successfully, but some users not found: ${notFoundUserIds.join(', ')}`,
                 });
             } else {
                 console.log('Users deleted successfully');
@@ -275,7 +311,7 @@ const UsersController = {
     },
 
     // send email verification
-    
+
 };
 
 module.exports = UsersController;

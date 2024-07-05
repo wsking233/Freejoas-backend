@@ -142,38 +142,49 @@ const freejoaController = {
         const { freejoaIds } = req.query; //get the freejoaId from the request body
         console.log('deleteFreejoa called with userID:', adminId);
 
-        if (!Array.isArray(freejoaIds) || freejoaIds.length === 0) {
-            return res.status(400).send({ message: 'No freejoa ids found in the request body' });
+        //check if the freejoaIds is in the request body
+        if (!freejoaIds) {
+            console.log('Please provide freejoa IDs to delete');
+            console.log("------------------------------------------")
+            return res.status(400).send({ message: 'Please provide freejoa IDs to delete' });
         }
+
+        // split the string into an array of IDs
+        const freejoaIdsArray = freejoaIds.split(',');
+
 
         try {
             let notFoundFreejoaIds = []; // to store IDs of freejoas not found
             // find freejoas by IDs
-            const freejoas = await freejoaModel.find({ _id: { $in: freejoaIds } });
+            const freejoas = await freejoaModel.find({ _id: { $in: freejoaIdsArray } });
 
             // check if no freejoas found
             if (!freejoas || freejoas.length === 0) {
+                console.log('No freejoas found with the provided IDs');
+                console.log("------------------------------------------")
                 return res.status(404).send({ message: 'No freejoas found with the provided IDs' });
             }
 
             // check if all freejoas are found
-            if (freejoas.length !== freejoaIds.length) {
+            if (freejoas.length !== freejoaIdsArray.length) {
                 // get the IDs of freejoas not found
                 const foundFreejoaIds = freejoas.map(freejoa => freejoa._id.toString());
-                notFoundFreejoaIds = freejoaIds.filter(id => !foundFreejoaIds.includes(id));
+                notFoundFreejoaIds = freejoaIdsArray.filter(id => !foundFreejoaIds.includes(id));
             }
 
             // delete freejoas
-            await freejoaModel.deleteMany({ _id: { $in: freejoaIds } });
+            await freejoaModel.deleteMany({ _id: { $in: foundFreejoaIds } });
 
             // if notFoundFreejoaIds is not empty, return 200 with a message
             if (notFoundFreejoaIds.length > 0) {
                 console.log('some freejoas not found:', notFoundFreejoaIds);
+                console.log("------------------------------------------")
                 res.status(200).json({
-                    message: `Some freejoas not found: ${notFoundFreejoaIds.join(', ')}`,
+                    message: `Freejoas deleted successfully, but some freejoas not found: ${notFoundFreejoaIds.join(', ')}`,
                 });
             } else {
                 console.log('Freejoas deleted successfully');
+                console.log("------------------------------------------")
                 res.status(200).json({
                     message: 'Freejoas deleted successfully',
                 });
@@ -183,22 +194,58 @@ const freejoaController = {
         }
     },
 
-    
+
     // get all pending freejoas
     getAllPendingFreejoas: async (req, res) => {
         const userId = req.decodedToken._id;
+        const { freejoaIds } = req.query;
         console.log("getAllPendingFreejoas called with userID:", userId);
+
+        let freejoaIdsArray = [];
+        if (freejoaIds) {
+            // split the string into an array of IDs
+            freejoaIdsArray = freejoaIds.split(',');
+        }
+
         try {
-            const freejoas = await pendingFreejoaModel.find({});
+            let freejoas;   // to store the freejoas found
+            let notFoundFreejoaIds = []; // to store IDs of freejoas not found
+
+            if (freejoaIdsArray.length > 0) {
+                // find freejoas by IDs
+                freejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIdsArray } });
+                // check if no freejoas found
+                if (!freejoas || freejoas.length === 0) {
+                    console.log('No pending freejoas found with the provided IDs');
+                    console.log("------------------------------------------");
+                    return res.status(404).send({ message: 'No pending freejoas found with the provided IDs' });
+                }
+                // check if all freejoas are found
+                if (freejoas.length !== freejoaIdsArray.length) {
+                    // get the IDs of freejoas not found
+                    const foundFreejoaIds = freejoas.map(freejoa => freejoa._id.toString());
+                    notFoundFreejoaIds = freejoaIdsArray.filter(id => !foundFreejoaIds.includes(id));
+                }
+            } else {
+                // if there is no freejoaIds query, get all freejoas
+                freejoas = await pendingFreejoaModel.find({});
+            }
+
             if (freejoas.length === 0) {
                 return res.status(200).send({ message: 'database is currently empty' });
             }
-            console.log("All pending freejoas returned successfully");
-            console.log("------------------------------------------");
-            res.status(200).send({
-                message: 'All pending freejoas returned successfully',
-                data: freejoas
-            });
+
+            // if notFoundFreejoaIds is not empty, return 200 with a message
+            if (notFoundFreejoaIds.length > 0) {
+                console.log('some pending freejoas not found:', notFoundFreejoaIds);
+                res.status(200).json({
+                    message: `Some pending freejoas not found: ${notFoundFreejoaIds.join(', ')}`,
+                    data: freejoas
+                });
+            } else {
+                console.log("All pending freejoas returned successfully");
+                res.status(200).send({ message: 'All pending freejoas returned successfully', data: freejoas });
+            }
         } catch (error) {
             console.log("Error getting pending freejoas", error);
             res.status(500).send({ message: error.message });
@@ -212,22 +259,43 @@ const freejoaController = {
          * from the pending freejoas collection to the freejoas collection
          */
         const userId = req.decodedToken._id;
-        const { freejoaIds } = req.body.query;    // receive an array of freejoa IDs
+        const { freejoaIds } = req.query;    // receive an array of freejoa IDs
         console.log("approvePendingFreejoas called with userID:", userId);
         const session = await mongoose.startSession();  // start a session to make sure all operations are atomic
         session.startTransaction();
         try {
+            let notFoundFreejoaIds = []; // to store IDs of freejoas not found
+            if (!freejoaIds) {
+                console.log("Please provide freejoa IDs to approve");
+                console.log("------------------------------------------");
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(400).send({ message: 'Please provide freejoa IDs to approve' });
+            }
+
+            //split the string into an array of IDs
+            const freejoaIdsArray = freejoaIds.split(',');
+
             // find all pending freejoas with the IDs
-            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIds } }).session(session);
-            console.log("Pending Freejoas found: ", pendingFreejoas);
+            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIdsArray } }).session(session);
+            console.log(pendingFreejoas.length + " pending freejoas found");
 
             // no pending freejoas found
             if (pendingFreejoas.length === 0) {
-                console.log("No Pending Freejoas found, request IDs: ", freejoaIds);
+                console.log("No Pending Freejoas found, request IDs: ", freejoaIdsArray);
+                console.log("------------------------------------------");
                 await session.abortTransaction();
                 session.endSession();
                 return res.status(404).send({ message: 'No Pending Freejoas found' });
             }
+
+            // check if all pending freejoas are found
+            if (pendingFreejoas.length !== freejoaIdsArray.length) {
+                // get the IDs of the freejoas that are not found
+                notFoundFreejoaIds = freejoaIdsArray.filter(id => !pendingFreejoas.map(freejoa => freejoa._id.toString()).includes(id));
+                console.log("Some pending freejoas not found: ", notFoundFreejoaIds);
+            }
+
 
             // save the new freejoas
             const savedFreejoas = await freejoaModel.insertMany(pendingFreejoas, { session });
@@ -235,23 +303,32 @@ const freejoaController = {
             // check if all pending freejoas were saved as new freejoas
             if (savedFreejoas.length === pendingFreejoas.length) {
                 // delete the pending freejoas
-                await pendingFreejoaModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);
+                const foundFreejoaIds = pendingFreejoas.map(freejoa => freejoa._id.toString());
+                await pendingFreejoaModel.deleteMany({ _id: { $in: foundFreejoaIds } }).session(session);
                 // commit the transaction
                 await session.commitTransaction();
-                console.log("Pending Freejoas approved successfully");
-                res.status(200).send({ message: 'Pending Freejoas approved successfully' });
-                console.log("------------------------------------------");
+
+                // if there are freejoas not found, return 200 with a message
+                if (notFoundFreejoaIds.length > 0) {
+                    console.log("Some pending freejoas not found: ", notFoundFreejoaIds);
+                    console.log("------------------------------------------");
+                    return res.status(200).send({ message: `Pending Freejoas approved successfully, but some pending freejoas not found: ${notFoundFreejoaIds.join(', ')}` });
+                } else {
+                    console.log("Pending Freejoas approved successfully");
+                    console.log("------------------------------------------");
+                    return res.status(200).send({ message: 'Pending Freejoas approved successfully' });
+                }
             } else {
                 await session.abortTransaction();
                 console.log("Error approving some pending freejoas");
-                res.status(500).send({ message: 'Error approving some pending freejoas' });
                 console.log("------------------------------------------");
+                return res.status(500).send({ message: 'Error approving some pending freejoas' });
             }
         } catch (error) {
             await session.abortTransaction();
             console.log("Error approving pending freejoas", error);
-            res.status(500).send({ message: error.message });
             console.log("------------------------------------------");
+            return res.status(500).send({ message: error.message });
         } finally {
             // end the session
             session.endSession();
@@ -261,24 +338,55 @@ const freejoaController = {
     // reject pending freejoas
     rejectPendingFreejoas: async (req, res) => {
         const userId = req.decodedToken._id;
-        const { freejoaIds } = req.body.query;   // receive an array of freejoa IDs
+        const { freejoaIds } = req.query;    // receive an array of freejoa IDs
         console.log("rejectPendingFreejoas called with userID:", userId);
         const session = await mongoose.startSession();  // start a session to make sure all operations are atomic
         session.startTransaction();
         try {
+            let notFoundFreejoaIds = []; // to store IDs of freejoas not found
+            if (!freejoaIds) {
+                console.log("Please provide freejoa IDs to approve");
+                console.log("------------------------------------------");
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(400).send({ message: 'Please provide freejoa IDs to approve' });
+            }
+
+            //split the string into an array of IDs
+            const freejoaIdsArray = freejoaIds.split(',');
+
             // find all pending freejoas with the IDs
-            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIds } }).session(session);
-            
+            const pendingFreejoas = await pendingFreejoaModel.find({ _id: { $in: freejoaIdsArray } }).session(session);
+            console.log(pendingFreejoas.length + " pending freejoas found");
+
             // no pending freejoas found
             if (pendingFreejoas.length === 0) {
                 console.log("No Pending Freejoas found, request IDs: ", freejoaIds);
+                console.log("------------------------------------------");
                 await session.abortTransaction();
                 session.endSession();
                 return res.status(404).send({ message: 'No Pending Freejoas found' });
             }
 
+            // check if all pending freejoas are found
+            if (pendingFreejoas.length !== freejoaIdsArray.length) {
+                // get the IDs of the freejoas that are not found
+                notFoundFreejoaIds = freejoaIdsArray.filter(id => !pendingFreejoas.map(freejoa => freejoa._id.toString()).includes(id));
+                console.log("Some pending freejoas not found: ", notFoundFreejoaIds);
+            }
+
+            // get all the found freejoa IDs
+            const foundFreejoaIds = pendingFreejoas.map(freejoa => freejoa._id.toString());
             // delete the pending freejoas
-            await pendingFreejoaModel.deleteMany({ _id: { $in: freejoaIds } }).session(session);
+            await pendingFreejoaModel.deleteMany({ _id: { $in: foundFreejoaIds } }).session(session);
+
+            if (notFoundFreejoaIds.length > 0) {
+                console.log("Some pending freejoas not found: ", notFoundFreejoaIds);
+                console.log("------------------------------------------");
+                await session.commitTransaction();
+                return res.status(200).send({ message: `Pending Freejoas rejected successfully, but some pending freejoas not found: ${notFoundFreejoaIds.join(', ')}` });
+            }
+
             await session.commitTransaction();
             console.log("Pending Freejoas rejected successfully");
             res.status(200).send({ message: 'Pending Freejoas rejected successfully' });
