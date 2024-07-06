@@ -2,15 +2,15 @@
  *  this file is used to load environment variables
  */
 
-const environment = process.env.NODE_ENV || 'development';
+// const environment = process.env.NODE_ENV || 'development';
 
-if (environment === 'development') {
-    const dotenv = require('dotenv').config();
+// if (environment === 'development') {
+//     const dotenv = require('dotenv').config();
 
-    if (dotenv.error) {
-        throw dotenv.error;
-    }
-}
+//     if (dotenv.error) {
+//         throw dotenv.error;
+//     }
+// }
 
 
 // server port

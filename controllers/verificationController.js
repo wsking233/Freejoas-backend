@@ -5,31 +5,12 @@ const ejs = require('ejs');
 const userModel = require('../models/userModel');
 const config = require('../server/config');
 
-///////////////////////////////////////////////////
-/*************************************************/
-/**
- * use this area in local environment only
- * Load local environment variables
- * 
- */
-
-// const dotenv = require('dotenv').config();
-// if(dotenv.error){//check if the .env file is present
-//     throw dotenv.error;
-// }
-
-//comment this area out before pushing to cloud
-
-/*************************************************/
-///////////////////////////////////////////////////
-
 
 // Load local environment variables get the password
 const EMAIL_SERVER_PASSWORD = config.EMAIL_SERVER_PASSWORD;
 const EMAIL_SERVER_DOMAIN = config.EMAIL_SERVER_DOMAIN;
 const EMAIL_SERVER_HOST = config.EMAIL_SERVER_HOST;
 const EMAIL_SERVER_PORT = config.EMAIL_SERVER_PORT;
-const VERIFICATION_SERVER_DOMAIN_LOCAL = config.VERIFICATION_SERVER_DOMAIN_LOCAL;
 const VERIFICATION_SERVER_DOMAIN = config.VERIFICATION_SERVER_DOMAIN;
 
 
@@ -63,7 +44,6 @@ async function sendVerificationEmail(req, res) {
     const token = generateToken();
     const createdAt = Date.now();
     emailTokens[email] = {token, createdAt};    // store the token and timestamp in memory
-    const verifyURLV1 = `${VERIFICATION_SERVER_DOMAIN}/api/v1/verification/verify?email=${email}&token=${token}`;
     const verifyURLV2 = `${VERIFICATION_SERVER_DOMAIN}/api/v2/users/verify-email?email=${email}&token=${token}`;
     const verifyURL = verifyURLV2;
 
@@ -77,7 +57,7 @@ async function sendVerificationEmail(req, res) {
         };
 
         // send mail with defined transport object
-        // await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
         console.log("verify url: ", verifyURL);
         res.status(200).send({ message: 'Verification email sent' , data: verifyURL});
     } catch (error) {
