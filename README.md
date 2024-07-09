@@ -1,7 +1,9 @@
 # Freejoas-backend
  This is the back-end server for freejoas app
 
-Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), vist  [here](https://github.com/EugeneRaynerNZ/freejoas) to see more. 
+Front-end is developed and maintained with [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ).
+
+You are welcome to explore the functionality by visit: freejoas.com.
 
 
 # API Documentation
@@ -48,7 +50,8 @@ Front-end is developed by [EugeneRaynerNZ](https://github.com/EugeneRaynerNZ), v
 - **Freejoa Object && pending-Freejoa Object**
 ```json
 {
-    "latitude": "String",   // mongoose.Schema.Types.ObjectId
+    "_id": "String", // mongoose.Schema.Types.ObjectId
+    "latitude": "String", 
     "longitude": "String", 
     "title": "String",
     "isActive": "Boolean",
@@ -74,7 +77,7 @@ This document outlines the APIs available for managing user-related operations i
 
 **URL**:{baseUrl}/api/v2/`Endpoint`
 
-## Create a New User
+### Create a New User
 
 - **URL:** `POST`: `/users`
 - **Description:** Create a new user account.
@@ -96,11 +99,130 @@ This document outlines the APIs available for managing user-related operations i
   }
   ```
 
+### Update a user
+- **URL:** `PATCH`: `/users/:userId/update`
+- **Description:** update user's detaile, email update will be removed from this endpoint in the future.
+- **Parameters:** userId.
+- **Request Body:** Should contain user information, password and account-type not allowed.
+    - **Example:** 
+  ```json
+  {
+    "username": "exampleUser",
+    "email": "user@example.com",
+  }
+  ```
+- **Response:** Returns the updated user object.
+    - **Example:** 
+  ```json
+  {
+    "message": "User updated successfully",
+    "data": {userObject}
+  }
+  ```
+
+
+### Update password
+- **URL:** `PATCH`: `/users/:userId/password`
+- **Description:** update user's password.
+- **Parameters:** userId.
+- **Request Body:** currentPassword and newPassword.
+    - **Example:** 
+  ```json
+  {
+    "currentPassword": "password",
+    "newPassword": "password",
+  }
+  ```
+- **Response:** Returns one opreation result message, no data returns.
+
+
+### Send Email Verification
+- **URL:** `POST`: `/users/send-email-verification`
+- **Description:** update user's password.
+- **Parameters:** None required.
+- **Request Body:** email and username.
+    - **Example:** 
+  ```json
+  {
+    "email": "user@example.com",
+    "username": "exampleUser",
+  }
+  ```
+- **Response:** Returns the created user object.
+    - **Example:** 
+  ```json
+  {
+    "message": "Verification email sent",
+    "data": "verifyURL"
+  }
+  ```
+
+### Verify Email
+- **URL:** `GET`: `/users/verify-email`
+- **Description:** Verify user's email by a temp link. Email and token should be inclouded in the query, this URL is gerented by `send-email-verification` API. No manual opreation required. 
+- **Parameters:** None required.
+- **Request Body:** None required.
+- **Response:** None.
+
+////////////////////////////////////////////////////
+
 ## freejoa Routers
+
+### upload a new freejoa
+- **URL:** `POST`: `/freejoas`
+- **Description:** upload a new freejoa object
+- **Parameters:** None required.
+- **Request Body:** freejoa object details.
+    - **Example:** 
+  ```json
+  {
+    "latitude": "String", 
+    "longitude": "String", 
+    "title": "String",
+    ...
+  }
+  ```
+- **Response:** Returns one opreation result message, no data returns.
+
+### Get all or search freejoa by Id
+- **URL:** `GET`: `/freejoas`
+- **Description:** get all freejoas in the database, or search freejoas by _id with query. 
+- **Parameters:** None required.
+- **Request Body:** None required.
+- **Response:** Returns one opreation result message, with found freejoa objects.
+    -**Example:**
+    ```json
+    {
+        "message": "Some freejoas not found: xxxx, xxxx",
+        "data": {found freejoa objects}
+    }
+    ```
+
 ## Auth Routers
+
+### login - user
+- **URL:** `POST`: `/auth/user/login`
+- **Description:** login, this is used for all types of user login at freejoas.com. 
+- **Parameters:** None required.
+- **Request Body:** None required.
+- **Response:** Returns one opreation result message, returns user's object and a token.
+    -**Example:**
+    ```json
+    {
+        "message": "Some freejoas not found: xxxx, xxxx",
+        "token": "token string",
+        "data": {user objects}
+    }
+    ```
+
+### login - admin
+- **URL:** `POST`: `/auth/admin/login`
+- **Description:** login, this is for freejoas-admin website use only. freejoas-admin is a closed-source project, use for manage freejoas.com's resources. 
+
 ## admin Routers
-
-
+**Description:** all the admin endpoints requir admin account type, and it is for freejoas-admin website use only, details can be seen in the files, but may move to a closed-source repo when we have more users and customized features in the future.  
+ 
+////////////////////////////////////////////////////
 
 # APIs - Version 1
 **URL**:{baseUrl}/api/v1/`Endpoint`
