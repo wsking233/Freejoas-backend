@@ -23,7 +23,7 @@ const UsersController = {
         try {
             //check the email is exists in database
             if (await userModel.findOne({ email: req.body.email })) {
-                return res.status(401).send({ message: 'Email already exists' });
+                return res.status(401).send({ message: 'Email already exists, please sign in to continue.' });
             };
 
             // Hash the password

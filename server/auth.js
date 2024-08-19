@@ -65,6 +65,8 @@ function checkPermission(requiredAccountTypes) {
     if (!requiredAccountTypes.includes(accountType)) {  
       //return a 403 status code if the requiredAccountTypes does not include the accountType
       console.log("Permission denied");
+      console.log("Required Account Types: " + requiredAccountTypes);
+      console.log("Account Type: " + accountType);
       return res.status(403).send({ message: 'Permission denied' });
     }
     console.log("Permission granted");

@@ -28,7 +28,7 @@ const authController = {
             const user = await userModel.findOne({ email: email});
             if (!user) {
                 console.log('User not found');
-                return res.status(404).send({ message: 'User not found' });
+                return res.status(404).send({ message: 'Invalid email address' });
             }
 
             //compare the password
@@ -42,7 +42,7 @@ const authController = {
 
             if (!user.isEmailVerified) {
                 console.log('Email not verified');
-                return res.status(402).send({ message: 'Email not verified' });
+                return res.status(402).send({ message: 'Email not verified, please check your email inbox' });
             }
 
             //create a token
