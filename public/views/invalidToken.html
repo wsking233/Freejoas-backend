@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Expired</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #e74c3c;
+        }
+        p {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="../images/Logo.png" alt="Freejoas-logo" />
+    <h2>Invalid request</h2>
+    <p>Sorry, the link is invalid or has expired. Please make a new request or log in again.</p>
+    <p>
+        You will be redirected to <a href="https://www.freejoas.com">Freejoas</a> in <span id="countdown">3</span> seconds.
+    </p> 
+    <script>
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown === 0) {
+                clearInterval(interval);
+                window.location.href = "https://www.freejoas.com";
+            }
+        }, 1000);
+    </script>
+</div>
+
+</body>
+</html>
